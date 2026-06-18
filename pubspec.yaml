@@ -1,0 +1,39 @@
+name: sodewalk
+description: "A new Flutter project."
+publish_to: 'none'
+
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.11.5
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  cupertino_icons: ^1.0.8
+  url_launcher: ^6.3.2
+  http: ^1.6.0
+  webview_flutter: ^4.13.1
+  shared_preferences: ^2.2.2
+  qr_flutter: ^4.1.0
+  mobile_scanner: ^5.2.3
+  geolocator: ^13.0.2
+  accurate_step_counter: ^2.0.0
+  permission_handler: ^11.3.1
+  google_fonts: ^6.2.1
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+
+flutter:
+  uses-material-design: true
+
+  assets:
+    - assets/vegetables.json
+    - assets/recipes.json
+    - assets/locations.json
+
+

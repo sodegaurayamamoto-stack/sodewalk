@@ -1,0 +1,11 @@
+{
+  "image": "ghcr.io/cirruslabs/flutter:stable",
+  "forwardPorts": [8090],
+  "portsAttributes": {
+    "8090": {
+      "label": "APK Download Server",
+      "onAutoForward": "silent"
+    }
+  },
+  "postAttachCommand": "gh codespace ports visibility 8090:public -c $CODESPACE_NAME || true"
+}
