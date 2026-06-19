@@ -34,7 +34,7 @@ class DestinationPickerPage extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 24.0),
               child: Text(
-                '行って帰ってくると、ちょうどその歩数になる場所を探します',
+                '目標歩数を達成できそうな場所を提案します',
                 style: TextStyle(fontSize: 15, color: Colors.grey.shade600),
               ),
             ),
@@ -58,8 +58,11 @@ class DestinationPickerPage extends StatelessWidget {
   }
 
   Widget _buildStepsButton(BuildContext context, int steps) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final buttonWidth = screenWidth * 0.7;
+
     return SizedBox(
-      width: 320,
+      width: buttonWidth,
       child: ElevatedButton(
         onPressed: () {
           Navigator.push(
@@ -68,7 +71,7 @@ class DestinationPickerPage extends StatelessWidget {
           );
         },
         style: ElevatedButton.styleFrom(
-          backgroundColor: Colors.green.shade600,
+          backgroundColor: Colors.orange,
           foregroundColor: Colors.white,
           padding: const EdgeInsets.symmetric(vertical: 26),
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
@@ -189,7 +192,13 @@ class _DestinationResultPageState extends State<DestinationResultPage> {
               const SizedBox(height: 24),
               ElevatedButton(
                 onPressed: _initialize,
-                child: const Text('もう一度試す'),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.orange,
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 14),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                ),
+                child: const Text('もう一度試す', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
               ),
             ],
           ),
@@ -218,22 +227,27 @@ class _DestinationResultPageState extends State<DestinationResultPage> {
               width: double.infinity,
               padding: const EdgeInsets.all(28),
               decoration: BoxDecoration(
-                color: Colors.green.shade50,
+                color: Colors.orange.shade50,
                 borderRadius: BorderRadius.circular(20),
-                border: Border.all(color: Colors.green.shade300, width: 2),
+                border: Border.all(color: Colors.orange.shade300, width: 2),
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(result.location.categoryLabel, style: TextStyle(fontSize: 16, color: Colors.green.shade700, fontWeight: FontWeight.bold)),
+                  Text(result.location.categoryLabel, style: TextStyle(fontSize: 16, color: Colors.orange.shade700, fontWeight: FontWeight.bold)),
                   const SizedBox(height: 8),
-                  Text(result.location.name, style: const TextStyle(fontSize: 32, fontWeight: FontWeight.bold)),
+                  Text(
+                    result.location.name,
+                    style: const TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
                   const SizedBox(height: 16),
                   Row(
                     children: [
                       Icon(Icons.straighten, color: Colors.grey.shade600, size: 20),
                       const SizedBox(width: 6),
-                      Text('$distanceKm km', style: const TextStyle(fontSize: 18)),
+                      Text('約$distanceKm km', style: const TextStyle(fontSize: 18)),
                       const SizedBox(width: 24),
                       Icon(Icons.explore, color: Colors.grey.shade600, size: 20),
                       const SizedBox(width: 6),
@@ -243,9 +257,9 @@ class _DestinationResultPageState extends State<DestinationResultPage> {
                   const SizedBox(height: 20),
                   Row(
                     children: [
-                      Icon(Icons.map, color: Colors.green.shade700, size: 18),
+                      Icon(Icons.map, color: Colors.orange.shade700, size: 18),
                       const SizedBox(width: 6),
-                      Text('タップして地図でルートを見る', style: TextStyle(fontSize: 14, color: Colors.green.shade700)),
+                      Text('タップして地図でルートを見る', style: TextStyle(fontSize: 14, color: Colors.orange.shade700)),
                     ],
                   ),
                 ],
@@ -257,10 +271,11 @@ class _DestinationResultPageState extends State<DestinationResultPage> {
             width: double.infinity,
             child: OutlinedButton.icon(
               onPressed: _pickNewDestination,
-              icon: const Icon(Icons.refresh),
-              label: const Text('次の目的地', style: TextStyle(fontSize: 18)),
+              icon: const Icon(Icons.refresh, color: Colors.orange),
+              label: const Text('次の目的地', style: TextStyle(fontSize: 18, color: Colors.orange, fontWeight: FontWeight.bold)),
               style: OutlinedButton.styleFrom(
                 padding: const EdgeInsets.symmetric(vertical: 18),
+                side: const BorderSide(color: Colors.orange, width: 2),
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
               ),
             ),
