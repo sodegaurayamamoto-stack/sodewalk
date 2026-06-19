@@ -73,7 +73,10 @@ class _OrderFormPageState extends State<OrderFormPage> {
         _phoneController.text.isEmpty ||
         _selectedDate == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('すべての項目を入力してください', style: TextStyle(fontSize: 18)), backgroundColor: Colors.redAccent),
+        const SnackBar(
+          content: Text('すべての項目を入力してください', style: TextStyle(fontSize: 18)),
+          backgroundColor: Colors.redAccent,
+        ),
       );
       return;
     }
@@ -98,20 +101,30 @@ class _OrderFormPageState extends State<OrderFormPage> {
     } else {
       setState(() => _isSubmitting = false);
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('送信に失敗しました。通信環境をご確認のうえ、もう一度お試しください。', style: TextStyle(fontSize: 16)), backgroundColor: Colors.redAccent),
+        SnackBar(
+          content: Text(
+            '送信失敗\n${GoogleSheetsService.lastDebugInfo}',
+            style: const TextStyle(fontSize: 14),
+          ),
+          backgroundColor: Colors.redAccent,
+          duration: const Duration(seconds: 10),
+        ),
       );
     }
   }
 
   void _showSuccessDialog() {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final dialogWidth = screenWidth * 0.8;
+
     showDialog(
       context: context,
       barrierDismissible: false,
       builder: (context) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
-        content: Container(
-          constraints: const BoxConstraints(minWidth: 460, maxWidth: 500),
+        content: SizedBox(
+          width: dialogWidth,
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -174,7 +187,7 @@ class _OrderFormPageState extends State<OrderFormPage> {
                           _buildInputFieldLabel('👤 お名前'),
                           _buildTextField(_nameController, '例：山田 太郎', TextInputType.text),
                           _buildInputFieldLabel('📍 ご住所'),
-                          _buildTextField(_addressController, '例：袖ケ浦市坂戸市場', TextInputType.text),
+                          _buildTextField(_addressController, '例：袖ケ浦市坂戸市場1-2-3', TextInputType.text),
                           _buildInputFieldLabel('📞 電話番号'),
                           _buildTextField(_phoneController, '例：09012345678', TextInputType.phone),
                           _buildInputFieldLabel('📅 受け渡し希望日'),
@@ -199,7 +212,30 @@ class _OrderFormPageState extends State<OrderFormPage> {
                               ),
                             ),
                           ),
-                          const SizedBox(height: 50),
+                          const SizedBox(height: 28),
+                          Container(
+                            width: double.infinity,
+                            padding: const EdgeInsets.all(16),
+                            decoration: BoxDecoration(
+                              color: Colors.amber.shade50,
+                              borderRadius: BorderRadius.circular(14),
+                              border: Border.all(color: Colors.amber.shade300, width: 1.5),
+                            ),
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Icon(Icons.info_outline, color: Colors.amber.shade800, size: 22),
+                                const SizedBox(width: 10),
+                                Expanded(
+                                  child: Text(
+                                    'お名前・ご住所・電話番号に誤りがある場合、商品をお渡しできない可能性があります。送信前に入力内容をご確認ください。',
+                                    style: TextStyle(fontSize: 14, height: 1.4, color: Colors.amber.shade900, fontWeight: FontWeight.w600),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          const SizedBox(height: 28),
                           SizedBox(
                             width: double.infinity,
                             child: ElevatedButton(
