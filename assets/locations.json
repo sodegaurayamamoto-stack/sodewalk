@@ -1161,6 +1161,96 @@
       "lng": null,
       "address": "袖ケ浦市神納1-11-14",
       "source": "manual"
+    },
+    {
+      "id": "l120",
+      "name": "袖ケ浦市民会館（昭和交流センター）",
+      "category": "rest",
+      "lat": null,
+      "lng": null,
+      "address": "袖ケ浦市坂戸市場1566",
+      "source": "manual"
+    },
+    {
+      "id": "l121",
+      "name": "長浦交流センター（長浦公民館）",
+      "category": "rest",
+      "lat": null,
+      "lng": null,
+      "address": "袖ケ浦市蔵波513-1",
+      "source": "manual"
+    },
+    {
+      "id": "l122",
+      "name": "根形交流センター（根形公民館）",
+      "category": "rest",
+      "lat": null,
+      "lng": null,
+      "address": "袖ケ浦市下新田1277",
+      "source": "manual"
+    },
+    {
+      "id": "l123",
+      "name": "平岡交流センター（平岡公民館）",
+      "category": "rest",
+      "lat": null,
+      "lng": null,
+      "address": "袖ケ浦市野里1563",
+      "source": "manual"
+    },
+    {
+      "id": "l124",
+      "name": "平川交流センター（平川公民館）",
+      "category": "rest",
+      "lat": null,
+      "lng": null,
+      "address": "袖ケ浦市横田115-1",
+      "source": "manual"
+    },
+    {
+      "id": "l125",
+      "name": "百目木公園",
+      "category": "rest",
+      "lat": null,
+      "lng": null,
+      "address": "袖ケ浦市百目木",
+      "source": "manual"
+    },
+    {
+      "id": "l126",
+      "name": "森吉公園",
+      "category": "rest",
+      "lat": null,
+      "lng": null,
+      "address": "袖ケ浦市長浦駅前3丁目",
+      "source": "manual"
+    },
+    {
+      "id": "l127",
+      "name": "泉公園",
+      "category": "rest",
+      "lat": null,
+      "lng": null,
+      "address": "袖ケ浦市蔵波台",
+      "source": "manual"
+    },
+    {
+      "id": "l128",
+      "name": "福王台中央公園",
+      "category": "rest",
+      "lat": null,
+      "lng": null,
+      "address": "袖ケ浦市福王台",
+      "source": "manual"
+    },
+    {
+      "id": "l129",
+      "name": "農村公園ひらおかの里",
+      "category": "rest",
+      "lat": null,
+      "lng": null,
+      "address": "袖ケ浦市野里",
+      "source": "manual"
     }
   ]
 }
