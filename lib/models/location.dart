@@ -27,16 +27,26 @@ class WalkLocation {
   /// カテゴリーIDを日本語の表示名に変換する
   String get categoryLabel {
     switch (category) {
-      case 'park':
-        return '公園';
-      case 'convenience':
-        return 'コンビニ';
-      case 'supermarket':
-        return 'スーパー';
-      case 'station':
-        return '駅';
-      case 'restaurant':
-        return '飲食店';
+      case 'dining':
+        return '飲食店・カフェ';
+      case 'shopping':
+        return 'ショッピング';
+      case 'leisure':
+        return 'レジャー・農園';
+      case 'rest':
+        return '公園・休憩スポット';
+      case 'transit':
+        return '駅・バス停';
+      case 'public':
+        return '公共施設';
+      case 'finance':
+        return '銀行・郵便局';
+      case 'medical':
+        return '医療・健康';
+      case 'shrine':
+        return '神社・お寺';
+      case 'beauty':
+        return '美容・理髪';
       default:
         return 'その他';
     }
