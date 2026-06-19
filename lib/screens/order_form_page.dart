@@ -50,7 +50,6 @@ class _OrderFormPageState extends State<OrderFormPage> {
       if (targetDate.weekday == DateTime.saturday) {
         final dateString =
             "${targetDate.year}-${targetDate.month.toString().padLeft(2, '0')}-${targetDate.day.toString().padLeft(2, '0')}";
-
         if (!disabledDates.contains(dateString)) {
           computedSaturdays.add("${targetDate.year}年${targetDate.month}月${targetDate.day}日（土）");
         }
@@ -80,6 +79,14 @@ class _OrderFormPageState extends State<OrderFormPage> {
       );
       return;
     }
+
+    // ① 住所確認ダイアログ
+    final confirmedLocation = await _showLocationConfirmDialog();
+    if (!confirmedLocation) return;
+
+    // ② 規格外品免責確認ダイアログ
+    final confirmedDisclaimer = await _showDisclaimerDialog();
+    if (!confirmedDisclaimer) return;
 
     setState(() => _isSubmitting = true);
 
@@ -113,9 +120,90 @@ class _OrderFormPageState extends State<OrderFormPage> {
     }
   }
 
+  Future<bool> _showLocationConfirmDialog() async {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final result = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: const Text('確認', style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
+        content: SizedBox(
+          width: screenWidth * 0.8,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
+                '交換した商品の受け渡しは袖ケ浦市内に限ります。',
+                style: TextStyle(fontSize: 16, height: 1.4, color: Colors.black87),
+              ),
+              const SizedBox(height: 12),
+              Text(
+                'お名前・ご住所・電話番号に誤りがある場合、商品をお渡しできない可能性がありますので、入力内容をご確認ください。',
+                style: TextStyle(fontSize: 14, height: 1.4, color: Colors.grey.shade700),
+              ),
+            ],
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('キャンセル', style: TextStyle(fontSize: 16, color: Colors.grey, fontWeight: FontWeight.bold)),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.pop(context, true),
+            style: ElevatedButton.styleFrom(backgroundColor: Colors.orange, foregroundColor: Colors.white),
+            child: const Text('進む', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+          ),
+        ],
+      ),
+    );
+    return result ?? false;
+  }
+
+  Future<bool> _showDisclaimerDialog() async {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final result = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: const Text('規格外品についてのご確認', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+        content: SizedBox(
+          width: screenWidth * 0.8,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
+                '提供される野菜は規格外品のため、形や大きさにばらつきがある場合があります。',
+                style: TextStyle(fontSize: 16, height: 1.5, color: Colors.black87),
+              ),
+              const SizedBox(height: 12),
+              Text(
+                '品質に関するクレームはお受けできません。ご了承いただける場合のみ交換をお申し込みください。',
+                style: TextStyle(fontSize: 14, height: 1.5, color: Colors.grey.shade700),
+              ),
+            ],
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('いいえ', style: TextStyle(fontSize: 16, color: Colors.grey, fontWeight: FontWeight.bold)),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.pop(context, true),
+            style: ElevatedButton.styleFrom(backgroundColor: Colors.orange, foregroundColor: Colors.white),
+            child: const Text('同意して送信', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+          ),
+        ],
+      ),
+    );
+    return result ?? false;
+  }
+
   void _showSuccessDialog() {
     final screenWidth = MediaQuery.of(context).size.width;
-    final dialogWidth = screenWidth * 0.8;
 
     showDialog(
       context: context,
@@ -124,7 +212,7 @@ class _OrderFormPageState extends State<OrderFormPage> {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
         content: SizedBox(
-          width: dialogWidth,
+          width: screenWidth * 0.8,
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
