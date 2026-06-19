@@ -945,6 +945,96 @@
       "name": "東横田駅",
       "category": "station",
       "address": "袖ケ浦市横田"
+    },
+    {
+      "id": "l096",
+      "name": "奈良輪豊月堂",
+      "category": "shop",
+      "lat": null,
+      "lng": null,
+      "address": "袖ケ浦市坂戸市場1352-2",
+      "source": "manual"
+    },
+    {
+      "id": "l097",
+      "name": "おびつ川",
+      "category": "restaurant",
+      "lat": null,
+      "lng": null,
+      "address": "袖ケ浦市坂戸市場2606-1",
+      "source": "manual"
+    },
+    {
+      "id": "l098",
+      "name": "回転寿司やまと袖ヶ浦駅前店",
+      "category": "restaurant",
+      "lat": null,
+      "lng": null,
+      "address": "袖ケ浦市袖ケ浦駅前1-39-1",
+      "source": "manual"
+    },
+    {
+      "id": "l099",
+      "name": "魚民ゆりまち袖ケ浦駅前モール店",
+      "category": "restaurant",
+      "lat": null,
+      "lng": null,
+      "address": "袖ケ浦市袖ケ浦駅前1-39-10",
+      "source": "manual"
+    },
+    {
+      "id": "l100",
+      "name": "牛角袖ヶ浦店",
+      "category": "restaurant",
+      "lat": null,
+      "lng": null,
+      "address": "袖ケ浦市蔵波台5-19-1",
+      "source": "manual"
+    },
+    {
+      "id": "l101",
+      "name": "しゃぶしゃぶ温野菜袖ヶ浦店",
+      "category": "restaurant",
+      "lat": null,
+      "lng": null,
+      "address": "袖ケ浦市蔵波台5-19-1",
+      "source": "manual"
+    },
+    {
+      "id": "l102",
+      "name": "焼肉ゆえん",
+      "category": "restaurant",
+      "lat": null,
+      "lng": null,
+      "address": "袖ケ浦市蔵波台4-20-8",
+      "source": "manual"
+    },
+    {
+      "id": "l103",
+      "name": "アメリカンステーキ16イチロー",
+      "category": "restaurant",
+      "lat": null,
+      "lng": null,
+      "address": "袖ケ浦市福王台2-21-1",
+      "source": "manual"
+    },
+    {
+      "id": "l104",
+      "name": "居酒屋れいちゃん",
+      "category": "restaurant",
+      "lat": null,
+      "lng": null,
+      "address": "袖ケ浦市福王台1-11-27",
+      "source": "manual"
+    },
+    {
+      "id": "l105",
+      "name": "一幸袖ヶ浦店",
+      "category": "restaurant",
+      "lat": null,
+      "lng": null,
+      "address": "袖ケ浦市代宿105-2",
+      "source": "manual"
     }
   ]
 }
