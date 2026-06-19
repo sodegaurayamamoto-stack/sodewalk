@@ -1035,6 +1035,132 @@
       "lng": null,
       "address": "袖ケ浦市代宿105-2",
       "source": "manual"
+    },
+    {
+      "id": "l106",
+      "name": "横浜家系ラーメン吟家袖ヶ浦店",
+      "category": "restaurant",
+      "lat": null,
+      "lng": null,
+      "address": "袖ケ浦市神納1-20-2",
+      "source": "manual"
+    },
+    {
+      "id": "l107",
+      "name": "すき家16号袖ヶ浦神納店",
+      "category": "restaurant",
+      "lat": null,
+      "lng": null,
+      "address": "袖ケ浦市神納1154-1",
+      "source": "manual"
+    },
+    {
+      "id": "l108",
+      "name": "ミニストップ袖ヶ浦神納店",
+      "category": "convenience",
+      "lat": null,
+      "lng": null,
+      "address": "袖ケ浦市神納1151-4",
+      "source": "manual"
+    },
+    {
+      "id": "l109",
+      "name": "けやき",
+      "category": "restaurant",
+      "lat": null,
+      "lng": null,
+      "address": "袖ケ浦市神納3318",
+      "source": "manual"
+    },
+    {
+      "id": "l110",
+      "name": "Café MA:AM",
+      "category": "cafe",
+      "lat": null,
+      "lng": null,
+      "address": "袖ケ浦市神納4135-44",
+      "source": "manual"
+    },
+    {
+      "id": "l111",
+      "name": "ROUTE",
+      "category": "cafe",
+      "lat": null,
+      "lng": null,
+      "address": "袖ケ浦市神納1-11-10",
+      "source": "manual"
+    },
+    {
+      "id": "l112",
+      "name": "Carney's福王台店",
+      "category": "supermarket",
+      "lat": null,
+      "lng": null,
+      "address": "袖ケ浦市神納1-1-3",
+      "source": "manual"
+    },
+    {
+      "id": "l113",
+      "name": "照寿司",
+      "category": "restaurant",
+      "lat": null,
+      "lng": null,
+      "address": "袖ケ浦市神納1-1-23",
+      "source": "manual"
+    },
+    {
+      "id": "l114",
+      "name": "シャトレーゼ袖ヶ浦店",
+      "category": "shop",
+      "lat": null,
+      "lng": null,
+      "address": "袖ケ浦市神納1丁目2-15",
+      "source": "manual"
+    },
+    {
+      "id": "l115",
+      "name": "ラーニ袖ヶ浦店",
+      "category": "restaurant",
+      "lat": null,
+      "lng": null,
+      "address": "袖ヶ浦市神納1-19-3",
+      "source": "manual"
+    },
+    {
+      "id": "l116",
+      "name": "美来",
+      "category": "restaurant",
+      "lat": null,
+      "lng": null,
+      "address": "袖ケ浦市神納1-18-1",
+      "source": "manual"
+    },
+    {
+      "id": "l117",
+      "name": "あま海苔直売センター",
+      "category": "shop",
+      "lat": null,
+      "lng": null,
+      "address": "袖ケ浦市神納1-19-1",
+      "source": "manual"
+    },
+    {
+      "id": "l118",
+      "name": "幸寿司",
+      "category": "restaurant",
+      "lat": null,
+      "lng": null,
+      "address": "袖ケ浦市神納2-18-5",
+      "source": "manual"
+    },
+    {
+      "id": "l119",
+      "name": "居酒屋野みち",
+      "category": "restaurant",
+      "lat": null,
+      "lng": null,
+      "address": "袖ケ浦市神納1-11-14",
+      "source": "manual"
     }
   ]
 }
