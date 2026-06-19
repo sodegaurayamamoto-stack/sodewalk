@@ -4,6 +4,7 @@ import '../widgets/reward_dialog.dart';
 import 'data_transfer_page.dart';
 import 'pedometer_page.dart';
 import 'eat_main_page.dart';
+import 'gaura_collection_page.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -14,7 +15,6 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   final StorageService _storage = StorageService();
-
   int _points = StorageService.defaultPoints;
 
   @override
@@ -33,7 +33,6 @@ class _HomePageState extends State<HomePage> {
         points: reward.earnedPoints,
       );
     }
-
     final points = await _storage.getPoints();
     setState(() => _points = points);
   }
@@ -43,6 +42,13 @@ class _HomePageState extends State<HomePage> {
       context,
       MaterialPageRoute(builder: (context) => const DataTransferPage()),
     ).then((_) => _loadInitialData());
+  }
+
+  void _openGauraCollection() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const GauraCollectionPage()),
+    );
   }
 
   @override
@@ -58,12 +64,14 @@ class _HomePageState extends State<HomePage> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
                     _buildTopPointsDisplay(_points),
-                    const SizedBox(height: 60),
+                    const SizedBox(height: 40),
                     Column(
                       children: [
                         _buildVerticalButton(context, '歩く', Colors.orange, const PedometerPage()),
                         const SizedBox(height: 24),
                         _buildVerticalButton(context, '食べる', Colors.green, const EatMainPage()),
+                        const SizedBox(height: 24),
+                        _buildGauraButton(context),
                       ],
                     ),
                   ],
@@ -72,10 +80,7 @@ class _HomePageState extends State<HomePage> {
             ),
             TextButton(
               onPressed: _openDataTransfer,
-              child: Text(
-                'データ移行',
-                style: TextStyle(fontSize: 13, color: Colors.grey.shade400),
-              ),
+              child: Text('データ移行', style: TextStyle(fontSize: 13, color: Colors.grey.shade400)),
             ),
             Padding(
               padding: const EdgeInsets.only(bottom: 20.0, top: 4.0, left: 28.0, right: 28.0),
@@ -104,20 +109,11 @@ class _HomePageState extends State<HomePage> {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          const Text(
-            '現在のあなたのポイント',
-            style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Colors.grey),
-          ),
+          const Text('現在のあなたのポイント', style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Colors.grey)),
           const SizedBox(height: 12),
-          Text(
-            '$points',
-            style: const TextStyle(fontSize: 64, fontWeight: FontWeight.w900, color: Colors.orange, height: 1.0),
-          ),
+          Text('$points', style: const TextStyle(fontSize: 64, fontWeight: FontWeight.w900, color: Colors.orange, height: 1.0)),
           const SizedBox(height: 4),
-          const Text(
-            'pt',
-            style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold, color: Colors.black87),
-          ),
+          const Text('pt', style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold, color: Colors.black87)),
         ],
       ),
     );
@@ -142,6 +138,26 @@ class _HomePageState extends State<HomePage> {
           elevation: 4,
         ),
         child: Text(label, style: const TextStyle(fontSize: 26, fontWeight: FontWeight.bold)),
+      ),
+    );
+  }
+
+  Widget _buildGauraButton(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final buttonWidth = screenWidth * 0.7;
+
+    return SizedBox(
+      width: buttonWidth,
+      child: ElevatedButton(
+        onPressed: _openGauraCollection,
+        style: ElevatedButton.styleFrom(
+          backgroundColor: Colors.purple.shade400,
+          foregroundColor: Colors.white,
+          padding: const EdgeInsets.symmetric(vertical: 22),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
+          elevation: 4,
+        ),
+        child: const Text('ガウラ図鑑', style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold)),
       ),
     );
   }
