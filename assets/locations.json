@@ -3,7 +3,7 @@
     {
       "id": "l001",
       "name": "袖ケ浦公園",
-      "category": "park",
+      "category": "rest",
       "lat": 35.4204474,
       "lng": 139.9912456,
       "source": "manual"
@@ -11,7 +11,7 @@
     {
       "id": "l002",
       "name": "袖ケ浦駅北口広場",
-      "category": "park",
+      "category": "rest",
       "lat": 35.4354858,
       "lng": 139.9572114,
       "source": "manual"
@@ -19,7 +19,7 @@
     {
       "id": "l003",
       "name": "道祖公園",
-      "category": "park",
+      "category": "rest",
       "lat": 35.3821462,
       "lng": 140.0336607,
       "source": "manual"
@@ -27,7 +27,7 @@
     {
       "id": "l004",
       "name": "袖ケ浦海浜公園",
-      "category": "park",
+      "category": "rest",
       "lat": 35.4558405,
       "lng": 139.9539727,
       "source": "manual"
@@ -35,7 +35,7 @@
     {
       "id": "l005",
       "name": "代宿公園",
-      "category": "park",
+      "category": "rest",
       "lat": 35.4581053,
       "lng": 140.0218775,
       "source": "manual"
@@ -43,7 +43,7 @@
     {
       "id": "l006",
       "name": "坂戸の森公園",
-      "category": "park",
+      "category": "rest",
       "lat": 35.4251229,
       "lng": 139.9527703,
       "source": "manual"
@@ -51,7 +51,7 @@
     {
       "id": "l007",
       "name": "蔵波公園",
-      "category": "park",
+      "category": "rest",
       "lat": 35.441119,
       "lng": 139.9994026,
       "source": "manual"
@@ -59,7 +59,7 @@
     {
       "id": "l008",
       "name": "新堰公園",
-      "category": "park",
+      "category": "rest",
       "lat": 35.4334145,
       "lng": 140.0279767,
       "source": "manual"
@@ -67,7 +67,7 @@
     {
       "id": "l009",
       "name": "セブンイレブン 袖ケ浦駅北口店",
-      "category": "convenience",
+      "category": "shopping",
       "lat": 35.433925,
       "lng": 139.9576169,
       "source": "manual"
@@ -75,7 +75,7 @@
     {
       "id": "l010",
       "name": "セブンイレブン 袖ケ浦上泉店",
-      "category": "convenience",
+      "category": "shopping",
       "lat": 35.4096164,
       "lng": 140.0443693,
       "source": "manual"
@@ -83,7 +83,7 @@
     {
       "id": "l011",
       "name": "セブンイレブン 袖ケ浦市役所北店",
-      "category": "convenience",
+      "category": "shopping",
       "lat": 35.4328706,
       "lng": 139.9534242,
       "source": "manual"
@@ -91,7 +91,7 @@
     {
       "id": "l012",
       "name": "ローソン袖ケ浦駅前店",
-      "category": "convenience",
+      "category": "shopping",
       "lat": 35.4303384,
       "lng": 139.9582199,
       "source": "manual"
@@ -99,7 +99,7 @@
     {
       "id": "l013",
       "name": "セブンイレブン 袖ケ浦のぞみ野通り北店",
-      "category": "convenience",
+      "category": "shopping",
       "lat": 35.428695,
       "lng": 140.029226,
       "source": "manual"
@@ -107,7 +107,7 @@
     {
       "id": "l014",
       "name": "セブンイレブン 袖ケ浦駅前通り店",
-      "category": "convenience",
+      "category": "shopping",
       "lat": 35.428042,
       "lng": 139.96156,
       "source": "manual"
@@ -115,7 +115,7 @@
     {
       "id": "l015",
       "name": "セブンイレブン 袖ケ浦今井店",
-      "category": "convenience",
+      "category": "shopping",
       "lat": 35.4394483,
       "lng": 139.9746438,
       "source": "manual"
@@ -123,7 +123,7 @@
     {
       "id": "l016",
       "name": "ミニストップ 袖ケ浦菅野店",
-      "category": "convenience",
+      "category": "shopping",
       "lat": 35.4199389,
       "lng": 139.9577301,
       "source": "manual"
@@ -131,7 +131,7 @@
     {
       "id": "l017",
       "name": "セブンイレブン 袖ケ浦奈良輪店",
-      "category": "convenience",
+      "category": "shopping",
       "lat": 35.429615,
       "lng": 139.956523,
       "source": "manual"
@@ -139,7 +139,7 @@
     {
       "id": "l018",
       "name": "ローソン袖ケ浦山小川店",
-      "category": "convenience",
+      "category": "shopping",
       "lat": 35.3881772,
       "lng": 140.0575592,
       "source": "manual"
@@ -147,7 +147,7 @@
     {
       "id": "l019",
       "name": "生鮮スーパー富分 のぞみ野店",
-      "category": "supermarket",
+      "category": "shopping",
       "lat": 35.4188456,
       "lng": 140.0254526,
       "source": "manual"
@@ -155,7 +155,7 @@
     {
       "id": "l020",
       "name": "Sendo 袖ケ浦駅前店",
-      "category": "supermarket",
+      "category": "shopping",
       "lat": 35.4322302,
       "lng": 139.9555906,
       "source": "manual"
@@ -163,7 +163,7 @@
     {
       "id": "l021",
       "name": "スーパーいとう",
-      "category": "supermarket",
+      "category": "shopping",
       "lat": 35.3953388,
       "lng": 140.041399,
       "source": "manual"
@@ -171,7 +171,7 @@
     {
       "id": "l022",
       "name": "主婦の店 福王台店",
-      "category": "supermarket",
+      "category": "shopping",
       "lat": 35.4251958,
       "lng": 139.9580989,
       "source": "manual"
@@ -179,7 +179,7 @@
     {
       "id": "l023",
       "name": "主婦の店 長浦店",
-      "category": "supermarket",
+      "category": "shopping",
       "lat": 35.448546,
       "lng": 140.0023625,
       "source": "manual"
@@ -187,7 +187,7 @@
     {
       "id": "l024",
       "name": "尾張屋 横田店",
-      "category": "supermarket",
+      "category": "shopping",
       "lat": 35.3848682,
       "lng": 140.0239803,
       "source": "manual"
@@ -195,7 +195,7 @@
     {
       "id": "l025",
       "name": "イオン長浦店",
-      "category": "supermarket",
+      "category": "shopping",
       "lat": 35.4502687,
       "lng": 139.9976567,
       "source": "manual"
@@ -203,7 +203,7 @@
     {
       "id": "l026",
       "name": "尾張屋 蔵波台店",
-      "category": "supermarket",
+      "category": "shopping",
       "lat": 35.4411428,
       "lng": 140.0008975,
       "source": "manual"
@@ -211,7 +211,7 @@
     {
       "id": "l027",
       "name": "袖ケ浦駅",
-      "category": "station",
+      "category": "transit",
       "lat": 35.4321885,
       "lng": 139.9578287,
       "source": "manual"
@@ -219,7 +219,7 @@
     {
       "id": "l028",
       "name": "太陽食堂",
-      "category": "restaurant",
+      "category": "dining",
       "lat": 35.4288499,
       "lng": 139.9558029,
       "source": "manual"
@@ -227,7 +227,7 @@
     {
       "id": "l029",
       "name": "富士食堂",
-      "category": "restaurant",
+      "category": "dining",
       "lat": 35.4187975,
       "lng": 139.985549,
       "source": "manual"
@@ -235,7 +235,7 @@
     {
       "id": "l030",
       "name": "鶴屋",
-      "category": "restaurant",
+      "category": "dining",
       "lat": 35.4355141,
       "lng": 139.9619076,
       "source": "manual"
@@ -243,7 +243,7 @@
     {
       "id": "l031",
       "name": "ゆき",
-      "category": "restaurant",
+      "category": "dining",
       "lat": 35.442821,
       "lng": 140.001436,
       "source": "manual"
@@ -251,7 +251,7 @@
     {
       "id": "l032",
       "name": "デニーズ 袖ケ浦店",
-      "category": "restaurant",
+      "category": "dining",
       "lat": 35.4277727,
       "lng": 139.9630796,
       "source": "manual"
@@ -259,7 +259,7 @@
     {
       "id": "l033",
       "name": "サイゼリヤ 袖ケ浦駅前店",
-      "category": "restaurant",
+      "category": "dining",
       "lat": 35.4326564,
       "lng": 139.9564413,
       "source": "manual"
@@ -267,7 +267,7 @@
     {
       "id": "l034",
       "name": "夢庵 袖ケ浦店",
-      "category": "restaurant",
+      "category": "dining",
       "lat": 35.4280222,
       "lng": 139.9633173,
       "source": "manual"
@@ -275,7 +275,7 @@
     {
       "id": "l035",
       "name": "ガスト 袖ケ浦店",
-      "category": "restaurant",
+      "category": "dining",
       "lat": 35.4232025,
       "lng": 139.9605336,
       "source": "manual"
@@ -283,7 +283,7 @@
     {
       "id": "l036",
       "name": "サイゼリヤ 蔵波台店",
-      "category": "restaurant",
+      "category": "dining",
       "lat": 35.44114,
       "lng": 140.002087,
       "source": "manual"
@@ -291,7 +291,7 @@
     {
       "id": "l037",
       "name": "あすみ堂",
-      "category": "cafe",
+      "category": "dining",
       "lat": 35.418756,
       "lng": 140.022615,
       "address": "袖ケ浦市のぞみ野41-2",
@@ -301,7 +301,7 @@
     {
       "id": "l038",
       "name": "居酒屋蔵",
-      "category": "restaurant",
+      "category": "dining",
       "lat": 35.441505,
       "lng": 140.001544,
       "address": "袖ケ浦市蔵波台7丁目14-12",
@@ -311,7 +311,7 @@
     {
       "id": "l039",
       "name": "魚喜",
-      "category": "shop",
+      "category": "shopping",
       "lat": 35.4276863,
       "lng": 139.9623623,
       "address": "袖ケ浦市福王台1-27-11",
@@ -321,7 +321,7 @@
     {
       "id": "l040",
       "name": "寿ラーメン",
-      "category": "restaurant",
+      "category": "dining",
       "lat": 35.42317,
       "lng": 139.954374,
       "address": "袖ケ浦市坂戸市場1439-8",
@@ -331,7 +331,7 @@
     {
       "id": "l041",
       "name": "若奈寿司",
-      "category": "restaurant",
+      "category": "dining",
       "lat": 35.425216,
       "lng": 139.956229,
       "address": "袖ケ浦市神納809-8",
@@ -341,7 +341,7 @@
     {
       "id": "l042",
       "name": "レストラン菜心味 袖ケ浦駅前店",
-      "category": "restaurant",
+      "category": "dining",
       "lat": 35.429703,
       "lng": 139.958909,
       "address": "袖ケ浦市福王台1丁目1-4",
@@ -354,7 +354,7 @@
     {
       "id": "l043",
       "name": "藤鮨",
-      "category": "restaurant",
+      "category": "dining",
       "lat": 35.428694,
       "lng": 139.960391,
       "address": "袖ケ浦市福王台1-13-1",
@@ -364,7 +364,7 @@
     {
       "id": "l044",
       "name": "SAPANA袖ヶ浦駅前店",
-      "category": "restaurant",
+      "category": "dining",
       "lat": 35.433004,
       "lng": 139.956943,
       "address": "袖ケ浦市袖ケ浦駅前1-39-12",
@@ -374,7 +374,7 @@
     {
       "id": "l045",
       "name": "三育フーズストア売店",
-      "category": "shop",
+      "category": "shopping",
       "lat": 35.45279958,
       "lng": 139.9979992,
       "address": "袖ケ浦市長浦1-1-65",
@@ -384,7 +384,7 @@
     {
       "id": "l046",
       "name": "tassoの森",
-      "category": "shop",
+      "category": "shopping",
       "lat": 35.420293,
       "lng": 140.044142,
       "address": "袖ケ浦市上泉1197",
@@ -397,7 +397,7 @@
     {
       "id": "l047",
       "name": "大衆中華ホサナ",
-      "category": "restaurant",
+      "category": "dining",
       "lat": 35.442475,
       "lng": 139.992008,
       "address": "袖ケ浦市蔵波台2-23-23",
@@ -407,7 +407,7 @@
     {
       "id": "l048",
       "name": "ゆりの里",
-      "category": "shop",
+      "category": "shopping",
       "lat": 35.4168158,
       "lng": 139.992258,
       "address": "袖ケ浦市飯富1635-1",
@@ -417,7 +417,7 @@
     {
       "id": "l049",
       "name": "福原製茶工場",
-      "category": "shop",
+      "category": "shopping",
       "lat": 35.411201,
       "lng": 140.037797,
       "address": "袖ケ浦市下泉787",
@@ -427,7 +427,7 @@
     {
       "id": "l050",
       "name": "山本製茶",
-      "category": "shop",
+      "category": "shopping",
       "lat": 35.426832,
       "lng": 140.085607,
       "address": "袖ケ浦市川原井1790",
@@ -437,7 +437,7 @@
     {
       "id": "l051",
       "name": "ローズヒップ&プランツ",
-      "category": "cafe",
+      "category": "dining",
       "lat": 35.436888,
       "lng": 139.995836,
       "address": "袖ケ浦市蔵波2887-1",
@@ -447,7 +447,7 @@
     {
       "id": "l052",
       "name": "からあげ大将亭長浦店",
-      "category": "restaurant",
+      "category": "dining",
       "lat": 35.44135,
       "lng": 139.996258,
       "address": "袖ケ浦市蔵波台4-12-7",
@@ -457,7 +457,7 @@
     {
       "id": "l053",
       "name": "OLLIE SWEETS",
-      "category": "cafe",
+      "category": "dining",
       "lat": 35.428653,
       "lng": 139.96045,
       "address": "袖ケ浦市福王台1-13-1",
@@ -470,7 +470,7 @@
     {
       "id": "l054",
       "name": "オーリーブレッド",
-      "category": "cafe",
+      "category": "dining",
       "lat": 35.42865661,
       "lng": 139.96047229,
       "address": "袖ケ浦市福王台1-13-1",
@@ -483,7 +483,7 @@
     {
       "id": "l055",
       "name": "田中商店",
-      "category": "shop",
+      "category": "shopping",
       "lat": 35.439568,
       "lng": 139.972452,
       "address": "袖ケ浦市今井2-122",
@@ -493,7 +493,7 @@
     {
       "id": "l056",
       "name": "旅人カフェぐりーちね",
-      "category": "cafe",
+      "category": "dining",
       "lat": 35.373004,
       "lng": 140.033037,
       "address": "袖ケ浦市下根岸285-2",
@@ -506,7 +506,7 @@
     {
       "id": "l057",
       "name": "露﨑味噌・糀店",
-      "category": "shop",
+      "category": "shopping",
       "lat": 35.386937,
       "lng": 140.010434,
       "address": "袖ケ浦市横田4211",
@@ -519,7 +519,7 @@
     {
       "id": "l058",
       "name": "天然温泉湯舞音袖ケ浦店",
-      "category": "other",
+      "category": "leisure",
       "lat": 35.431708,
       "lng": 139.955698,
       "address": "袖ケ浦市袖ケ浦駅前1-39-15",
@@ -532,7 +532,7 @@
     {
       "id": "l059",
       "name": "日本料理天麩羅ありはら",
-      "category": "restaurant",
+      "category": "dining",
       "lat": 35.443931,
       "lng": 139.984063,
       "address": "袖ケ浦市今井1-1-33",
@@ -545,7 +545,7 @@
     {
       "id": "l060",
       "name": "パティスリーキャンジュール",
-      "category": "cafe",
+      "category": "dining",
       "lat": 35.44147926,
       "lng": 140.00153382,
       "address": "袖ケ浦市蔵波台7-14-12",
@@ -558,7 +558,7 @@
     {
       "id": "l061",
       "name": "ヒルカフェ/ヨルイザカヤゴッチ",
-      "category": "cafe",
+      "category": "dining",
       "lat": 35.433004,
       "lng": 139.956943,
       "address": "袖ケ浦市袖ケ浦駅前1丁目39-12",
@@ -571,7 +571,7 @@
     {
       "id": "l062",
       "name": "ホルモン焼肉てっちゃん",
-      "category": "restaurant",
+      "category": "dining",
       "lat": 35.429029,
       "lng": 139.955577,
       "address": "袖ケ浦市奈良輪10",
@@ -584,7 +584,7 @@
     {
       "id": "l063",
       "name": "房州魚料理わかせい",
-      "category": "restaurant",
+      "category": "dining",
       "lat": 35.430395,
       "lng": 139.965093,
       "address": "袖ケ浦市福王台2-12-16",
@@ -597,7 +597,7 @@
     {
       "id": "l064",
       "name": "Resthouse Ayame",
-      "category": "restaurant",
+      "category": "dining",
       "lat": 35.419941,
       "lng": 139.989988,
       "address": "袖ケ浦市飯富2360",
@@ -610,7 +610,7 @@
     {
       "id": "l065",
       "name": "Rond○Rond",
-      "category": "cafe",
+      "category": "dining",
       "lat": 35.44494334,
       "lng": 139.98602294,
       "address": "袖ケ浦市蔵波2751-1",
@@ -623,7 +623,7 @@
     {
       "id": "l066",
       "name": "garden",
-      "category": "restaurant",
+      "category": "dining",
       "lat": 35.4054518,
       "lng": 140.0564415,
       "address": "袖ケ浦市蔵波台6-1-10",
@@ -636,7 +636,7 @@
     {
       "id": "l067",
       "name": "K's curry",
-      "category": "restaurant",
+      "category": "dining",
       "lat": 35.44158,
       "lng": 140.001381,
       "address": "袖ケ浦市蔵波台7-14-13",
@@ -649,7 +649,7 @@
     {
       "id": "l068",
       "name": "袖ケ浦市外野落花生生産組合",
-      "category": "shop",
+      "category": "shopping",
       "lat": 35.428831,
       "lng": 140.025651,
       "address": "袖ケ浦市蔵波3108",
@@ -662,7 +662,7 @@
     {
       "id": "l069",
       "name": "定度ラーメン",
-      "category": "restaurant",
+      "category": "dining",
       "lat": 35.408828,
       "lng": 140.049678,
       "address": "袖ケ浦市上泉1345",
@@ -675,7 +675,7 @@
     {
       "id": "l070",
       "name": "JUNSE KIMPPA",
-      "category": "restaurant",
+      "category": "dining",
       "lat": 35.449508,
       "lng": 139.994214,
       "address": "袖ケ浦市蔵波10-1",
@@ -688,7 +688,7 @@
     {
       "id": "l071",
       "name": "ガウラーベリーかねこ農園",
-      "category": "shop",
+      "category": "leisure",
       "lat": 35.43364243,
       "lng": 140.03426987,
       "address": "袖ケ浦市蔵波3311",
@@ -701,7 +701,7 @@
     {
       "id": "l072",
       "name": "あづフラワー",
-      "category": "shop",
+      "category": "leisure",
       "lat": 35.439085,
       "lng": 140.008886,
       "address": "袖ケ浦市蔵波722",
@@ -714,7 +714,7 @@
     {
       "id": "l073",
       "name": "ICHIGOYA・SUN",
-      "category": "shop",
+      "category": "leisure",
       "lat": 35.380841,
       "lng": 140.051906,
       "address": "袖ケ浦市三箇2088",
@@ -727,7 +727,7 @@
     {
       "id": "l074",
       "name": "奥野農園",
-      "category": "shop",
+      "category": "leisure",
       "lat": 35.431032,
       "lng": 140.026275,
       "address": "袖ケ浦市蔵波1006",
@@ -740,7 +740,7 @@
     {
       "id": "l075",
       "name": "上泉農園",
-      "category": "shop",
+      "category": "leisure",
       "lat": 35.415036,
       "lng": 140.042644,
       "address": "袖ケ浦市上泉1138",
@@ -753,7 +753,7 @@
     {
       "id": "l076",
       "name": "麺処霧笛",
-      "category": "restaurant",
+      "category": "dining",
       "lat": 35.423971,
       "lng": 139.960255,
       "address": "袖ケ浦市神納1-7-18",
@@ -766,7 +766,7 @@
     {
       "id": "l077",
       "name": "インド料理チャダニー",
-      "category": "restaurant",
+      "category": "dining",
       "lat": 35.44296,
       "lng": 139.991824,
       "address": "袖ケ浦市蔵波台2-23-1",
@@ -779,7 +779,7 @@
     {
       "id": "l078",
       "name": "のうえんカフェ",
-      "category": "cafe",
+      "category": "dining",
       "lat": 35.420518,
       "lng": 140.043802,
       "address": "袖ケ浦市上泉1197",
@@ -792,7 +792,7 @@
     {
       "id": "l079",
       "name": "おいしいお菓子の店 大原軒",
-      "category": "cafe",
+      "category": "dining",
       "lat": 35.426415,
       "lng": 139.94935,
       "address": "袖ケ浦市坂戸市場",
@@ -808,7 +808,7 @@
       "lat": null,
       "lng": null,
       "name": "さわ屋",
-      "category": "restaurant",
+      "category": "dining",
       "address": "袖ケ浦市横田2159-1"
     },
     {
@@ -817,7 +817,7 @@
       "lat": null,
       "lng": null,
       "name": "四川大飯店ときわ",
-      "category": "restaurant",
+      "category": "dining",
       "address": "袖ケ浦市横田2255"
     },
     {
@@ -826,7 +826,7 @@
       "lat": null,
       "lng": null,
       "name": "あじさい",
-      "category": "restaurant",
+      "category": "dining",
       "address": "袖ケ浦市横田2006"
     },
     {
@@ -835,7 +835,7 @@
       "lat": null,
       "lng": null,
       "name": "加登栄",
-      "category": "restaurant",
+      "category": "dining",
       "address": "袖ケ浦市横田2658-3"
     },
     {
@@ -844,7 +844,7 @@
       "lat": null,
       "lng": null,
       "name": "ぐりて",
-      "category": "restaurant",
+      "category": "dining",
       "address": "袖ケ浦市横田1934-2"
     },
     {
@@ -853,7 +853,7 @@
       "lat": null,
       "lng": null,
       "name": "信寿し",
-      "category": "restaurant",
+      "category": "dining",
       "address": "袖ケ浦市横田3737-7"
     },
     {
@@ -862,7 +862,7 @@
       "lat": null,
       "lng": null,
       "name": "とんとん",
-      "category": "restaurant",
+      "category": "dining",
       "address": "袖ケ浦市横田4080"
     },
     {
@@ -871,7 +871,7 @@
       "lat": null,
       "lng": null,
       "name": "kitchen DonDon",
-      "category": "restaurant",
+      "category": "dining",
       "address": "袖ケ浦市横田440"
     },
     {
@@ -880,7 +880,7 @@
       "lat": null,
       "lng": null,
       "name": "JACQUEs",
-      "category": "cafe",
+      "category": "dining",
       "address": "袖ケ浦市横田33-1"
     },
     {
@@ -889,7 +889,7 @@
       "lat": null,
       "lng": null,
       "name": "Ozzi Coffee",
-      "category": "cafe",
+      "category": "dining",
       "address": "袖ケ浦市横田2211"
     },
     {
@@ -898,7 +898,7 @@
       "lat": null,
       "lng": null,
       "name": "魚照",
-      "category": "restaurant",
+      "category": "dining",
       "address": "袖ケ浦市横田237-4"
     },
     {
@@ -907,7 +907,7 @@
       "lat": null,
       "lng": null,
       "name": "小沢製菓",
-      "category": "shop",
+      "category": "shopping",
       "address": "袖ケ浦市横田198-3"
     },
     {
@@ -916,7 +916,7 @@
       "lat": null,
       "lng": null,
       "name": "セブンイレブン袖ヶ浦東横田店",
-      "category": "convenience",
+      "category": "shopping",
       "address": "袖ケ浦市横田408"
     },
     {
@@ -925,7 +925,7 @@
       "lat": null,
       "lng": null,
       "name": "横田ジャンボ",
-      "category": "other",
+      "category": "leisure",
       "address": "袖ケ浦市横田460"
     },
     {
@@ -934,7 +934,7 @@
       "lat": 35.386087,
       "lng": 140.020304,
       "name": "横田駅",
-      "category": "station",
+      "category": "transit",
       "address": "袖ケ浦市横田"
     },
     {
@@ -943,13 +943,13 @@
       "lat": 35.386265,
       "lng": 140.036445,
       "name": "東横田駅",
-      "category": "station",
+      "category": "transit",
       "address": "袖ケ浦市横田"
     },
     {
       "id": "l096",
       "name": "奈良輪豊月堂",
-      "category": "shop",
+      "category": "shopping",
       "lat": null,
       "lng": null,
       "address": "袖ケ浦市坂戸市場1352-2",
@@ -958,7 +958,7 @@
     {
       "id": "l097",
       "name": "おびつ川",
-      "category": "restaurant",
+      "category": "dining",
       "lat": null,
       "lng": null,
       "address": "袖ケ浦市坂戸市場2606-1",
@@ -967,7 +967,7 @@
     {
       "id": "l098",
       "name": "回転寿司やまと袖ヶ浦駅前店",
-      "category": "restaurant",
+      "category": "dining",
       "lat": null,
       "lng": null,
       "address": "袖ケ浦市袖ケ浦駅前1-39-1",
@@ -976,7 +976,7 @@
     {
       "id": "l099",
       "name": "魚民ゆりまち袖ケ浦駅前モール店",
-      "category": "restaurant",
+      "category": "dining",
       "lat": null,
       "lng": null,
       "address": "袖ケ浦市袖ケ浦駅前1-39-10",
@@ -985,7 +985,7 @@
     {
       "id": "l100",
       "name": "牛角袖ヶ浦店",
-      "category": "restaurant",
+      "category": "dining",
       "lat": null,
       "lng": null,
       "address": "袖ケ浦市蔵波台5-19-1",
@@ -994,7 +994,7 @@
     {
       "id": "l101",
       "name": "しゃぶしゃぶ温野菜袖ヶ浦店",
-      "category": "restaurant",
+      "category": "dining",
       "lat": null,
       "lng": null,
       "address": "袖ケ浦市蔵波台5-19-1",
@@ -1003,7 +1003,7 @@
     {
       "id": "l102",
       "name": "焼肉ゆえん",
-      "category": "restaurant",
+      "category": "dining",
       "lat": null,
       "lng": null,
       "address": "袖ケ浦市蔵波台4-20-8",
@@ -1012,7 +1012,7 @@
     {
       "id": "l103",
       "name": "アメリカンステーキ16イチロー",
-      "category": "restaurant",
+      "category": "dining",
       "lat": null,
       "lng": null,
       "address": "袖ケ浦市福王台2-21-1",
@@ -1021,7 +1021,7 @@
     {
       "id": "l104",
       "name": "居酒屋れいちゃん",
-      "category": "restaurant",
+      "category": "dining",
       "lat": null,
       "lng": null,
       "address": "袖ケ浦市福王台1-11-27",
@@ -1030,7 +1030,7 @@
     {
       "id": "l105",
       "name": "一幸袖ヶ浦店",
-      "category": "restaurant",
+      "category": "dining",
       "lat": null,
       "lng": null,
       "address": "袖ケ浦市代宿105-2",
@@ -1039,7 +1039,7 @@
     {
       "id": "l106",
       "name": "横浜家系ラーメン吟家袖ヶ浦店",
-      "category": "restaurant",
+      "category": "dining",
       "lat": null,
       "lng": null,
       "address": "袖ケ浦市神納1-20-2",
@@ -1048,7 +1048,7 @@
     {
       "id": "l107",
       "name": "すき家16号袖ヶ浦神納店",
-      "category": "restaurant",
+      "category": "dining",
       "lat": null,
       "lng": null,
       "address": "袖ケ浦市神納1154-1",
@@ -1057,7 +1057,7 @@
     {
       "id": "l108",
       "name": "ミニストップ袖ヶ浦神納店",
-      "category": "convenience",
+      "category": "shopping",
       "lat": null,
       "lng": null,
       "address": "袖ケ浦市神納1151-4",
@@ -1066,7 +1066,7 @@
     {
       "id": "l109",
       "name": "けやき",
-      "category": "restaurant",
+      "category": "dining",
       "lat": null,
       "lng": null,
       "address": "袖ケ浦市神納3318",
@@ -1075,7 +1075,7 @@
     {
       "id": "l110",
       "name": "Café MA:AM",
-      "category": "cafe",
+      "category": "dining",
       "lat": null,
       "lng": null,
       "address": "袖ケ浦市神納4135-44",
@@ -1084,7 +1084,7 @@
     {
       "id": "l111",
       "name": "ROUTE",
-      "category": "cafe",
+      "category": "dining",
       "lat": null,
       "lng": null,
       "address": "袖ケ浦市神納1-11-10",
@@ -1093,7 +1093,7 @@
     {
       "id": "l112",
       "name": "Carney's福王台店",
-      "category": "supermarket",
+      "category": "shopping",
       "lat": null,
       "lng": null,
       "address": "袖ケ浦市神納1-1-3",
@@ -1102,7 +1102,7 @@
     {
       "id": "l113",
       "name": "照寿司",
-      "category": "restaurant",
+      "category": "dining",
       "lat": null,
       "lng": null,
       "address": "袖ケ浦市神納1-1-23",
@@ -1111,7 +1111,7 @@
     {
       "id": "l114",
       "name": "シャトレーゼ袖ヶ浦店",
-      "category": "shop",
+      "category": "shopping",
       "lat": null,
       "lng": null,
       "address": "袖ケ浦市神納1丁目2-15",
@@ -1120,7 +1120,7 @@
     {
       "id": "l115",
       "name": "ラーニ袖ヶ浦店",
-      "category": "restaurant",
+      "category": "dining",
       "lat": null,
       "lng": null,
       "address": "袖ヶ浦市神納1-19-3",
@@ -1129,7 +1129,7 @@
     {
       "id": "l116",
       "name": "美来",
-      "category": "restaurant",
+      "category": "dining",
       "lat": null,
       "lng": null,
       "address": "袖ケ浦市神納1-18-1",
@@ -1138,7 +1138,7 @@
     {
       "id": "l117",
       "name": "あま海苔直売センター",
-      "category": "shop",
+      "category": "shopping",
       "lat": null,
       "lng": null,
       "address": "袖ケ浦市神納1-19-1",
@@ -1147,7 +1147,7 @@
     {
       "id": "l118",
       "name": "幸寿司",
-      "category": "restaurant",
+      "category": "dining",
       "lat": null,
       "lng": null,
       "address": "袖ケ浦市神納2-18-5",
@@ -1156,7 +1156,7 @@
     {
       "id": "l119",
       "name": "居酒屋野みち",
-      "category": "restaurant",
+      "category": "dining",
       "lat": null,
       "lng": null,
       "address": "袖ケ浦市神納1-11-14",
