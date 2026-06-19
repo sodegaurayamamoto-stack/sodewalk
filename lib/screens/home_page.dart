@@ -68,15 +68,29 @@ class _HomePageState extends State<HomePage> {
                 ),
               ),
             ),
-            TextButton(
-              onPressed: _openDataTransfer,
-              child: Text('データ移行', style: TextStyle(fontSize: 13, color: Colors.grey.shade400)),
+            Padding(
+              padding: const EdgeInsets.only(bottom: 8.0),
+              child: GestureDetector(
+                onTap: _openDataTransfer,
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  decoration: BoxDecoration(
+                    color: Colors.grey.shade100,
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(color: Colors.grey.shade300, width: 1),
+                  ),
+                  child: Text(
+                    'データ移行',
+                    style: TextStyle(fontSize: 13, color: Colors.grey.shade500),
+                  ),
+                ),
+              ),
             ),
             Padding(
               padding: const EdgeInsets.only(bottom: 20.0, top: 4.0, left: 28.0, right: 28.0),
               child: const Text(
                 '※当アプリは一市民による有志の開発プロジェクトです。\n袖ケ浦市のマスコットキャラクター「ガウラ」の\n使用許諾を得て開発しています。',
-                style: TextStyle(fontSize: 12, height: 1.6, color: Color(0xFF9E9E9E), fontWeight: FontWeight.w500),
+                style: TextStyle(fontSize: 10, height: 1.6, color: Color(0xFF9E9E9E), fontWeight: FontWeight.w500),
                 textAlign: TextAlign.center,
               ),
             ),
