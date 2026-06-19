@@ -23,6 +23,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future<void> _loadInitialData() async {
+    // 前日の歩数報酬
     final reward = await _storage.processYesterdayReward();
     if (reward != null && mounted) {
       setState(() => _points = reward.totalPoints);
@@ -32,8 +33,61 @@ class _HomePageState extends State<HomePage> {
         points: reward.earnedPoints,
       );
     }
+
+    // ログインボーナス
+    final loginBonus = await _storage.processTodayLoginBonus();
+    if (loginBonus != null && mounted) {
+      setState(() => _points = loginBonus);
+      await _showLoginBonusDialog(loginBonus);
+    }
+
     final points = await _storage.getPoints();
     setState(() => _points = points);
+  }
+
+  Future<void> _showLoginBonusDialog(int totalPoints) async {
+    await showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        contentPadding: const EdgeInsets.all(28),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Text('🎁', style: TextStyle(fontSize: 48)),
+            const SizedBox(height: 12),
+            const Text(
+              'ログインボーナス！',
+              style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Colors.orange),
+            ),
+            const SizedBox(height: 8),
+            const Text(
+              '+1pt ゲット！',
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.orange),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              '合計 ${totalPoints}pt',
+              style: TextStyle(fontSize: 16, color: Colors.grey.shade600),
+            ),
+            const SizedBox(height: 24),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: () => Navigator.pop(context),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.orange,
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(vertical: 14),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                ),
+                child: const Text('閉じる', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 
   void _openDataTransfer() {
