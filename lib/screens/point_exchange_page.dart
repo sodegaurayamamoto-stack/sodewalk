@@ -37,7 +37,7 @@ class _PointExchangePageState extends State<PointExchangePage> {
       });
     } catch (e) {
       setState(() {
-        _vegetables = [Vegetable(id: 'daikon', name: '大根', points: 100)];
+        _vegetables = [Vegetable(id: 'daikon', name: '大根', points: 200)];
         _isLoading = false;
       });
     }
@@ -62,13 +62,27 @@ class _PointExchangePageState extends State<PointExchangePage> {
             Expanded(
               child: _isLoading
                   ? const Center(child: CircularProgressIndicator())
-                  : ListView.builder(
-                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                      itemCount: _vegetables.length,
-                      itemBuilder: (context, index) {
-                        final item = _vegetables[index];
-                        return _buildVegetableCard(context, item.name, item.points);
-                      },
+                  : Column(
+                      children: [
+                        Expanded(
+                          child: ListView.builder(
+                            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                            itemCount: _vegetables.length,
+                            itemBuilder: (context, index) {
+                              final item = _vegetables[index];
+                              return _buildVegetableCard(context, item.name, item.points);
+                            },
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+                          child: Text(
+                            '※野菜は袖ケ浦市内の農家さんから規格外品を提供いただいています',
+                            style: TextStyle(fontSize: 13, color: Colors.grey.shade500, height: 1.5),
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+                      ],
                     ),
             ),
           ],
@@ -81,7 +95,7 @@ class _PointExchangePageState extends State<PointExchangePage> {
     return Container(
       width: double.infinity,
       margin: const EdgeInsets.only(bottom: 20),
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+      padding: const EdgeInsets.fromLTRB(20, 20, 20, 24),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(20),
@@ -114,13 +128,12 @@ class _PointExchangePageState extends State<PointExchangePage> {
             child: ElevatedButton(
               onPressed: () async {
                 final currentPoints = await _storage.getPoints();
-
                 if (currentPoints >= requiredPoints) {
                   if (!mounted) return;
                   _showLocationConfirmDialog(context, name, requiredPoints);
                 } else {
                   if (!mounted) return;
-                  _showShortageDialog(requiredPoints - currentPoints);
+                  _showShortageDialog(context, requiredPoints - currentPoints);
                 }
               },
               style: ElevatedButton.styleFrom(
@@ -150,9 +163,20 @@ class _PointExchangePageState extends State<PointExchangePage> {
           title: const Text('確認', style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
           content: SizedBox(
             width: dialogWidth,
-            child: const Text(
-              '交換した商品の受け渡しは袖ケ浦市内に限ります。',
-              style: TextStyle(fontSize: 16, height: 1.4, color: Colors.black87),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  '交換した商品の受け渡しは袖ケ浦市内に限ります。',
+                  style: TextStyle(fontSize: 16, height: 1.4, color: Colors.black87),
+                ),
+                const SizedBox(height: 12),
+                Text(
+                  'お名前・ご住所・電話番号に誤りがある場合、商品をお渡しできない可能性がありますので、次の画面で入力内容をご確認ください。',
+                  style: TextStyle(fontSize: 14, height: 1.4, color: Colors.grey.shade700),
+                ),
+              ],
             ),
           ),
           actions: [
@@ -177,7 +201,7 @@ class _PointExchangePageState extends State<PointExchangePage> {
     );
   }
 
-  void _showShortageDialog(int lack) {
+  void _showShortageDialog(BuildContext context, int lack) {
     final screenWidth = MediaQuery.of(context).size.width;
     final dialogWidth = screenWidth * 0.8;
 

@@ -3,7 +3,6 @@ import 'package:url_launcher/url_launcher.dart';
 import '../models/location.dart';
 import '../services/location_picker_service.dart';
 
-/// 「目的地を決める」機能の入口。歩数を選ぶ画面。
 class DestinationPickerPage extends StatelessWidget {
   const DestinationPickerPage({super.key});
 
@@ -83,7 +82,6 @@ class DestinationPickerPage extends StatelessWidget {
   }
 }
 
-/// 目的地の結果を表示し、再抽選やルート表示を行う画面。
 class DestinationResultPage extends StatefulWidget {
   final int targetSteps;
   const DestinationResultPage({super.key, required this.targetSteps});
@@ -99,6 +97,7 @@ class _DestinationResultPageState extends State<DestinationResultPage> {
   DestinationResult? _result;
   bool _isLoading = true;
   String? _errorMessage;
+  String? _lastLocationId; // 直前に選ばれた目的地のID
 
   @override
   void initState() {
@@ -136,9 +135,11 @@ class _DestinationResultPageState extends State<DestinationResultPage> {
       currentLat: _currentLat!,
       currentLng: _currentLng!,
       targetSteps: widget.targetSteps,
+      excludeLocationId: _lastLocationId, // 直前と同じ場所を除外
     );
     setState(() {
       _result = result;
+      _lastLocationId = result?.location.id; // 今回選ばれたIDを記録
       _isLoading = false;
     });
   }
@@ -218,7 +219,7 @@ class _DestinationResultPageState extends State<DestinationResultPage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('${widget.targetSteps}歩の目的地', style: const TextStyle(fontSize: 22, color: Colors.grey)),
+          Text('${widget.targetSteps}歩を目指せる目的地', style: const TextStyle(fontSize: 22, color: Colors.grey)),
           const SizedBox(height: 24),
           InkWell(
             borderRadius: BorderRadius.circular(20),
