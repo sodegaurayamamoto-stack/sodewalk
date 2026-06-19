@@ -801,6 +801,150 @@
       "phone": "0438-64-0604",
       "hours": "9:00〜18:30",
       "closed": "毎週水曜"
+    },
+    {
+      "id": "l080",
+      "source": "manual",
+      "lat": null,
+      "lng": null,
+      "name": "さわ屋",
+      "category": "restaurant",
+      "address": "袖ケ浦市横田2159-1"
+    },
+    {
+      "id": "l081",
+      "source": "manual",
+      "lat": null,
+      "lng": null,
+      "name": "四川大飯店ときわ",
+      "category": "restaurant",
+      "address": "袖ケ浦市横田2255"
+    },
+    {
+      "id": "l082",
+      "source": "manual",
+      "lat": null,
+      "lng": null,
+      "name": "あじさい",
+      "category": "restaurant",
+      "address": "袖ケ浦市横田2006"
+    },
+    {
+      "id": "l083",
+      "source": "manual",
+      "lat": null,
+      "lng": null,
+      "name": "加登栄",
+      "category": "restaurant",
+      "address": "袖ケ浦市横田2658-3"
+    },
+    {
+      "id": "l084",
+      "source": "manual",
+      "lat": null,
+      "lng": null,
+      "name": "ぐりて",
+      "category": "restaurant",
+      "address": "袖ケ浦市横田1934-2"
+    },
+    {
+      "id": "l085",
+      "source": "manual",
+      "lat": null,
+      "lng": null,
+      "name": "信寿し",
+      "category": "restaurant",
+      "address": "袖ケ浦市横田3737-7"
+    },
+    {
+      "id": "l086",
+      "source": "manual",
+      "lat": null,
+      "lng": null,
+      "name": "とんとん",
+      "category": "restaurant",
+      "address": "袖ケ浦市横田4080"
+    },
+    {
+      "id": "l087",
+      "source": "manual",
+      "lat": null,
+      "lng": null,
+      "name": "kitchen DonDon",
+      "category": "restaurant",
+      "address": "袖ケ浦市横田440"
+    },
+    {
+      "id": "l088",
+      "source": "manual",
+      "lat": null,
+      "lng": null,
+      "name": "JACQUEs",
+      "category": "cafe",
+      "address": "袖ケ浦市横田33-1"
+    },
+    {
+      "id": "l089",
+      "source": "manual",
+      "lat": null,
+      "lng": null,
+      "name": "Ozzi Coffee",
+      "category": "cafe",
+      "address": "袖ケ浦市横田2211"
+    },
+    {
+      "id": "l090",
+      "source": "manual",
+      "lat": null,
+      "lng": null,
+      "name": "魚照",
+      "category": "restaurant",
+      "address": "袖ケ浦市横田237-4"
+    },
+    {
+      "id": "l091",
+      "source": "manual",
+      "lat": null,
+      "lng": null,
+      "name": "小沢製菓",
+      "category": "shop",
+      "address": "袖ケ浦市横田198-3"
+    },
+    {
+      "id": "l092",
+      "source": "manual",
+      "lat": null,
+      "lng": null,
+      "name": "セブンイレブン袖ヶ浦東横田店",
+      "category": "convenience",
+      "address": "袖ケ浦市横田408"
+    },
+    {
+      "id": "l093",
+      "source": "manual",
+      "lat": null,
+      "lng": null,
+      "name": "横田ジャンボ",
+      "category": "other",
+      "address": "袖ケ浦市横田460"
+    },
+    {
+      "id": "l094",
+      "source": "manual",
+      "lat": 35.386087,
+      "lng": 140.020304,
+      "name": "横田駅",
+      "category": "station",
+      "address": "袖ケ浦市横田"
+    },
+    {
+      "id": "l095",
+      "source": "manual",
+      "lat": 35.386265,
+      "lng": 140.036445,
+      "name": "東横田駅",
+      "category": "station",
+      "address": "袖ケ浦市横田"
     }
   ]
 }
