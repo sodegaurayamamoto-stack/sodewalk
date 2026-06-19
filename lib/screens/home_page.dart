@@ -4,7 +4,6 @@ import '../widgets/reward_dialog.dart';
 import 'data_transfer_page.dart';
 import 'pedometer_page.dart';
 import 'eat_main_page.dart';
-import 'gaura_collection_page.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -44,13 +43,6 @@ class _HomePageState extends State<HomePage> {
     ).then((_) => _loadInitialData());
   }
 
-  void _openGauraCollection() {
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => const GauraCollectionPage()),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -64,14 +56,12 @@ class _HomePageState extends State<HomePage> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
                     _buildTopPointsDisplay(_points),
-                    const SizedBox(height: 40),
+                    const SizedBox(height: 60),
                     Column(
                       children: [
                         _buildVerticalButton(context, '歩く', Colors.orange, const PedometerPage()),
                         const SizedBox(height: 24),
                         _buildVerticalButton(context, '食べる', Colors.green, const EatMainPage()),
-                        const SizedBox(height: 24),
-                        _buildGauraButton(context),
                       ],
                     ),
                   ],
@@ -138,26 +128,6 @@ class _HomePageState extends State<HomePage> {
           elevation: 4,
         ),
         child: Text(label, style: const TextStyle(fontSize: 26, fontWeight: FontWeight.bold)),
-      ),
-    );
-  }
-
-  Widget _buildGauraButton(BuildContext context) {
-    final screenWidth = MediaQuery.of(context).size.width;
-    final buttonWidth = screenWidth * 0.7;
-
-    return SizedBox(
-      width: buttonWidth,
-      child: ElevatedButton(
-        onPressed: _openGauraCollection,
-        style: ElevatedButton.styleFrom(
-          backgroundColor: Colors.purple.shade400,
-          foregroundColor: Colors.white,
-          padding: const EdgeInsets.symmetric(vertical: 22),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
-          elevation: 4,
-        ),
-        child: const Text('ガウラ図鑑', style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold)),
       ),
     );
   }

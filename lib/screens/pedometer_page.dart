@@ -1,9 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:accurate_step_counter/accurate_step_counter.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:geolocator/geolocator.dart';
+import 'dart:convert';
+import 'package:flutter/services.dart';
+import '../models/location.dart';
 import '../services/storage_service.dart';
 import 'history_page.dart';
 import 'destination_picker_page.dart';
+import 'gaura_collection_page.dart';
 
 class PedometerPage extends StatefulWidget {
   const PedometerPage({super.key});
@@ -19,6 +24,8 @@ class _PedometerPageState extends State<PedometerPage>
 
   int _steps = 0;
   String _statusMessage = '読み込み中...';
+  bool _isError = false;
+  bool _isSearchingGaura = false;
 
   @override
   void initState() {
@@ -40,43 +47,38 @@ class _PedometerPageState extends State<PedometerPage>
   }
 
   Future<void> _initStepCounter() async {
-    // まず今日保存済みの歩数を読み込んで表示しておく（センサー初期化中も画面が空白にならないように）。
     final savedSteps = await _storage.getStepsForDay(DateTime.now());
     if (mounted) {
       setState(() => _steps = savedSteps);
     }
 
-    // Android 10以上では身体活動（歩数センサー）の権限を明示的にリクエストする必要がある。
     final status = await Permission.activityRecognition.request();
     if (!status.isGranted) {
       if (mounted) {
         setState(() {
           _statusMessage = '歩数センサーの利用が許可されていません。設定から許可してください。';
+          _isError = true;
         });
       }
       return;
     }
 
     try {
-      // SQLiteでの歩数ログ機能を初期化し、検出を開始する。
-      // useBackgroundIsolate: trueにすることで、低スペック端末でもUIがスムーズに動く。
       await _stepCounter.initializeLogging(useBackgroundIsolate: true);
       await _stepCounter.start(config: StepDetectorConfig.walking());
       await _stepCounter.startLogging(config: StepRecordConfig.aggregated());
 
-      // 「今日の歩数」をリアルタイムに監視する。
-      // アプリが終了していた間の歩数も、再起動時に自動的に反映される。
       _stepCounter.watchAggregatedStepCounter().listen((steps) async {
         await _storage.setStepsForDay(DateTime.now(), steps);
         if (mounted) {
           setState(() {
             _steps = steps;
             _statusMessage = '';
+            _isError = false;
           });
         }
       });
 
-      // アプリが終了していた間の歩数が同期された時に通知する。
       _stepCounter.onTerminatedStepsDetected = (steps, from, to) {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
@@ -88,13 +90,225 @@ class _PedometerPageState extends State<PedometerPage>
       if (mounted) {
         setState(() {
           _statusMessage = 'この端末では歩数センサーが利用できません。';
+          _isError = true;
         });
       }
     }
   }
 
+  Future<void> _searchGaura() async {
+    setState(() => _isSearchingGaura = true);
+
+    try {
+      // 位置情報取得
+      bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
+      if (!serviceEnabled) {
+        _showGauraMessage('位置情報が無効です。設定から有効にしてください。');
+        return;
+      }
+
+      LocationPermission permission = await Geolocator.checkPermission();
+      if (permission == LocationPermission.denied) {
+        permission = await Geolocator.requestPermission();
+        if (permission == LocationPermission.denied) {
+          _showGauraMessage('位置情報の利用を許可してください。');
+          return;
+        }
+      }
+
+      final position = await Geolocator.getCurrentPosition(
+        locationSettings: const LocationSettings(accuracy: LocationAccuracy.high),
+      );
+
+      // locations.jsonを読み込む
+      final jsonString = await rootBundle.loadString('assets/locations.json');
+      final data = json.decode(jsonString);
+      final locations = (data['locations'] as List)
+          .map((e) => WalkLocation.fromJson(e as Map<String, dynamic>))
+          .toList();
+
+      // 100m以内のスポットを検索
+      final nearbySpots = locations.where((loc) {
+        final distance = Geolocator.distanceBetween(
+          position.latitude,
+          position.longitude,
+          loc.lat,
+          loc.lng,
+        );
+        return distance <= 100;
+      }).toList();
+
+      if (nearbySpots.isEmpty) {
+        _showGauraNotFound();
+        return;
+      }
+
+      // 未取得のスポットを優先
+      final collected = await _storage.getCollectedGaura();
+      WalkLocation targetSpot;
+      final uncollected = nearbySpots.where((s) => !collected.contains(s.id)).toList();
+      if (uncollected.isNotEmpty) {
+        targetSpot = uncollected.first;
+      } else {
+        targetSpot = nearbySpots.first;
+      }
+
+      // ガウラくんをゲット（新規かどうか）
+      final isNew = await _storage.addGaura(targetSpot.id);
+
+      // 1日1回ポイント付与
+      final earnedPoints = await _storage.tryGiveGauraPoint();
+
+      if (mounted) {
+        _showGauraFound(targetSpot, isNew, earnedPoints);
+      }
+    } catch (e) {
+      if (mounted) {
+        _showGauraMessage('エラーが発生しました。もう一度お試しください。');
+      }
+    } finally {
+      if (mounted) setState(() => _isSearchingGaura = false);
+    }
+  }
+
+  void _showGauraNotFound() {
+    setState(() => _isSearchingGaura = false);
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        contentPadding: const EdgeInsets.all(24),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text('🔍', style: const TextStyle(fontSize: 48)),
+            const SizedBox(height: 12),
+            const Text(
+              '近くにはガウラくんはいないみたい。',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 8),
+            Text(
+              '目的地を決めるを押してガウラくんを探そう！',
+              style: TextStyle(fontSize: 15, color: Colors.grey.shade600),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: () => Navigator.pop(context),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.orange,
+                foregroundColor: Colors.white,
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              ),
+              child: const Text('閉じる', style: TextStyle(fontSize: 16)),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _showGauraFound(WalkLocation spot, bool isNew, int? earnedPoints) {
+    final num = int.tryParse(spot.id.replaceAll('l', '').replaceAll('0', '')) ?? 0;
+    final numStr = int.tryParse(spot.id.replaceAll('l', ''))?.toString().padLeft(3, '0') ?? '001';
+
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        contentPadding: const EdgeInsets.all(24),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(isNew ? '🎉' : '✨', style: const TextStyle(fontSize: 48)),
+            const SizedBox(height: 8),
+            Text(
+              isNew ? 'ガウラくんをゲット！' : 'ガウラくんはゲット済み！',
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                color: isNew ? Colors.orange : Colors.blue,
+              ),
+            ),
+            const SizedBox(height: 12),
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: Colors.orange.shade50,
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: Colors.orange.shade200),
+              ),
+              child: Column(
+                children: [
+                  Image.asset(
+                    'assets/gaura/gaura_$numStr.png',
+                    width: 80,
+                    height: 80,
+                  ),
+                  const SizedBox(height: 4),
+                  Text('No.$numStr', style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
+                  Text(spot.name, style: TextStyle(fontSize: 13, color: Colors.grey.shade600)),
+                ],
+              ),
+            ),
+            const SizedBox(height: 12),
+            if (earnedPoints != null)
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                decoration: BoxDecoration(
+                  color: Colors.green.shade50,
+                  borderRadius: BorderRadius.circular(10),
+                  border: Border.all(color: Colors.green.shade200),
+                ),
+                child: Text(
+                  '+5pt ゲット！（合計 ${earnedPoints}pt）',
+                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.green),
+                ),
+              )
+            else
+              Text(
+                '今日のポイントはすでにゲット済みです',
+                style: TextStyle(fontSize: 13, color: Colors.grey.shade500),
+              ),
+            const SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: () => Navigator.pop(context),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.orange,
+                foregroundColor: Colors.white,
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              ),
+              child: const Text('閉じる', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _showGauraMessage(String message) {
+    setState(() => _isSearchingGaura = false);
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(message), backgroundColor: Colors.orange),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final stepsText = '$_steps';
+    double stepsFontSize;
+    if (stepsText.length <= 3) {
+      stepsFontSize = 80;
+    } else if (stepsText.length == 4) {
+      stepsFontSize = 64;
+    } else {
+      stepsFontSize = 50;
+    }
+    if (screenWidth < 360) stepsFontSize *= 0.85;
+
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -121,44 +335,106 @@ class _PedometerPageState extends State<PedometerPage>
         ],
       ),
       body: SafeArea(
-        child: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Text('今日の歩数', style: TextStyle(fontSize: 18, color: Colors.grey)),
-              const SizedBox(height: 8),
-              Text('$_steps', style: const TextStyle(fontSize: 80, fontWeight: FontWeight.bold, color: Colors.orange)),
-              const Text('歩', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
-              if (_statusMessage.isNotEmpty) ...[
-                const SizedBox(height: 16),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 32),
-                  child: Text(
-                    _statusMessage,
-                    style: const TextStyle(fontSize: 14, color: Colors.red),
-                    textAlign: TextAlign.center,
-                  ),
-                ),
-              ],
-              const SizedBox(height: 60),
-              OutlinedButton.icon(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => const DestinationPickerPage()),
-                  );
-                },
-                icon: const Icon(Icons.explore, color: Colors.green),
-                label: const Text('目的地を決める', style: TextStyle(fontSize: 20, color: Colors.green, fontWeight: FontWeight.bold)),
-                style: OutlinedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 18),
-                  side: const BorderSide(color: Colors.green, width: 2),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        child: SingleChildScrollView(
+          child: ConstrainedBox(
+            constraints: BoxConstraints(
+              minHeight: MediaQuery.of(context).size.height -
+                  MediaQuery.of(context).padding.top -
+                  MediaQuery.of(context).padding.bottom -
+                  kToolbarHeight,
+            ),
+            child: Center(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 24),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Text('今日の歩数', style: TextStyle(fontSize: 18, color: Colors.grey)),
+                    const SizedBox(height: 8),
+                    FittedBox(
+                      fit: BoxFit.scaleDown,
+                      child: Text(
+                        stepsText,
+                        style: TextStyle(fontSize: stepsFontSize, fontWeight: FontWeight.bold, color: Colors.orange),
+                      ),
+                    ),
+                    const Text('歩', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
+                    if (_statusMessage.isNotEmpty) ...[
+                      const SizedBox(height: 16),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 32),
+                        child: Text(
+                          _statusMessage,
+                          style: TextStyle(fontSize: 14, color: _isError ? Colors.red : Colors.grey.shade500),
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                    ],
+                    const SizedBox(height: 40),
+                    // ガウラくんを探してポイントをゲット
+                    _buildWideButton(
+                      label: _isSearchingGaura ? '探索中...' : 'ガウラくんを探してポイントをゲット',
+                      color: Colors.purple.shade400,
+                      onPressed: _isSearchingGaura ? null : _searchGaura,
+                      fontSize: 18,
+                    ),
+                    const SizedBox(height: 16),
+                    // 目的地を決める
+                    _buildWideButton(
+                      label: '目的地を決める',
+                      color: Colors.green,
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => const DestinationPickerPage()),
+                        );
+                      },
+                      fontSize: 20,
+                    ),
+                    const SizedBox(height: 16),
+                    // ガウラ図鑑
+                    _buildWideButton(
+                      label: 'ガウラ図鑑',
+                      color: Colors.indigo.shade400,
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => const GauraCollectionPage()),
+                        );
+                      },
+                      fontSize: 20,
+                    ),
+                  ],
                 ),
               ),
-            ],
+            ),
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _buildWideButton({
+    required String label,
+    required Color color,
+    required VoidCallback? onPressed,
+    double fontSize = 20,
+  }) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final buttonWidth = screenWidth * 0.7;
+
+    return SizedBox(
+      width: buttonWidth,
+      child: ElevatedButton(
+        onPressed: onPressed,
+        style: ElevatedButton.styleFrom(
+          backgroundColor: color,
+          foregroundColor: Colors.white,
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 18),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          elevation: 4,
+        ),
+        child: Text(label, style: TextStyle(fontSize: fontSize, fontWeight: FontWeight.bold), textAlign: TextAlign.center),
       ),
     );
   }

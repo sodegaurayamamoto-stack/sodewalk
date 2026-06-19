@@ -149,41 +149,28 @@ class StorageService {
     return totalPoints;
   }
 
-  // --- 到着ボーナス関連 ---
+  // --- ガウラくん探索ポイント（1日1回）関連 ---
 
-  static const String _arrivalBonusDateKey = 'arrival_bonus_date';
-  static const String _arrivalBonusLocationKey = 'arrival_bonus_location';
+  static const String _gauraPointDateKey = 'gaura_point_date';
 
-  /// 今日すでに到着ボーナスを取得済みかチェック
-  Future<bool> hasArrivalBonusToday() async {
+  /// 今日すでにガウラ探索ポイントを取得済みか
+  Future<bool> hasGauraPointToday() async {
     final prefs = await SharedPreferences.getInstance();
-    final savedDate = prefs.getString(_arrivalBonusDateKey);
+    final savedDate = prefs.getString(_gauraPointDateKey);
     if (savedDate == null) return false;
     final today = DateTime.now();
     final todayStr = '${today.year}-${today.month}-${today.day}';
     return savedDate == todayStr;
   }
 
-  /// 今日到着ボーナスを取得した場所のIDを取得
-  Future<String?> getTodayArrivalLocationId() async {
-    final prefs = await SharedPreferences.getInstance();
-    final savedDate = prefs.getString(_arrivalBonusDateKey);
-    if (savedDate == null) return null;
-    final today = DateTime.now();
-    final todayStr = '${today.year}-${today.month}-${today.day}';
-    if (savedDate != todayStr) return null;
-    return prefs.getString(_arrivalBonusLocationKey);
-  }
-
-  /// 到着ボーナスを付与して記録する
-  Future<int> giveArrivalBonus(String locationId) async {
+  /// ガウラ探索ポイントを付与（1日1回のみ+5pt）
+  Future<int?> tryGiveGauraPoint() async {
+    final already = await hasGauraPointToday();
+    if (already) return null;
     final prefs = await SharedPreferences.getInstance();
     final today = DateTime.now();
     final todayStr = '${today.year}-${today.month}-${today.day}';
-    await prefs.setString(_arrivalBonusDateKey, todayStr);
-    await prefs.setString(_arrivalBonusLocationKey, locationId);
-    // ガウラくんを追加
-    await addGaura(locationId);
+    await prefs.setString(_gauraPointDateKey, todayStr);
     return await addPoints(5);
   }
 
@@ -191,24 +178,23 @@ class StorageService {
 
   static const String _gauraKey = 'collected_gaura';
 
-  /// 収集済みガウラくんのIDセットを取得
   Future<Set<String>> getCollectedGaura() async {
     final prefs = await SharedPreferences.getInstance();
     final list = prefs.getStringList(_gauraKey) ?? [];
     return list.toSet();
   }
 
-  /// ガウラくんを追加
-  Future<void> addGaura(String locationId) async {
+  Future<bool> addGaura(String locationId) async {
     final prefs = await SharedPreferences.getInstance();
     final list = prefs.getStringList(_gauraKey) ?? [];
     if (!list.contains(locationId)) {
       list.add(locationId);
       await prefs.setStringList(_gauraKey, list);
+      return true; // 新規ゲット
     }
+    return false; // すでに取得済み
   }
 
-  /// 指定したガウラくんを取得済みかチェック
   Future<bool> hasGaura(String locationId) async {
     final collected = await getCollectedGaura();
     return collected.contains(locationId);
