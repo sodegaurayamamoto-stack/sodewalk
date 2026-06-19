@@ -80,11 +80,9 @@ class _OrderFormPageState extends State<OrderFormPage> {
       return;
     }
 
-    // ① 住所確認ダイアログ
     final confirmedLocation = await _showLocationConfirmDialog();
     if (!confirmedLocation) return;
 
-    // ② 規格外品免責確認ダイアログ
     final confirmedDisclaimer = await _showDisclaimerDialog();
     if (!confirmedDisclaimer) return;
 
@@ -134,7 +132,7 @@ class _OrderFormPageState extends State<OrderFormPage> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const Text(
-                '交換した商品の受け渡しは袖ケ浦市内に限ります。',
+                '交換した商品の受け渡しは\n袖ケ浦市内に限ります。',
                 style: TextStyle(fontSize: 16, height: 1.4, color: Colors.black87),
               ),
               const SizedBox(height: 12),
@@ -167,7 +165,7 @@ class _OrderFormPageState extends State<OrderFormPage> {
       context: context,
       builder: (context) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: const Text('規格外品についてのご確認', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+        title: const Text('規格外品についてのご確認', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
         content: SizedBox(
           width: screenWidth * 0.8,
           child: Column(
@@ -218,7 +216,11 @@ class _OrderFormPageState extends State<OrderFormPage> {
             children: [
               const Icon(Icons.check_circle, color: Colors.green, size: 72),
               const SizedBox(height: 16),
-              const Text('交換の申請が完了しました', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.green)),
+              const Text(
+                '交換の申請が完了しました',
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.green),
+                textAlign: TextAlign.center,
+              ),
               const SizedBox(height: 20),
               const Text(
                 '担当者が内容を確認し、受け渡し準備を進めます。お受け渡し日に商品をお渡しいたします。',

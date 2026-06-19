@@ -74,9 +74,9 @@ class _HomePageState extends State<HomePage> {
             ),
             Padding(
               padding: const EdgeInsets.only(bottom: 20.0, top: 4.0, left: 28.0, right: 28.0),
-              child: Text(
-                '※当アプリは一市民による有志の開発プロジェクト（非公式）です。袖ケ浦市のマスコットキャラクター「ガウラ」の使用許諾を得て開発しています。',
-                style: TextStyle(fontSize: 15, height: 1.5, color: Colors.grey.shade600, fontWeight: FontWeight.w500),
+              child: const Text(
+                '※当アプリは一市民による有志の開発プロジェクトです。\n袖ケ浦市のマスコットキャラクター「ガウラ」の\n使用許諾を得て開発しています。',
+                style: TextStyle(fontSize: 12, height: 1.6, color: Color(0xFF9E9E9E), fontWeight: FontWeight.w500),
                 textAlign: TextAlign.center,
               ),
             ),
