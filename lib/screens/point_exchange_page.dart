@@ -77,7 +77,7 @@ class _PointExchangePageState extends State<PointExchangePage> {
                         Padding(
                           padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
                           child: Text(
-                            '※野菜は袖ケ浦市内の農家さんから規格外品を提供いただいています',
+                            '※野菜は袖ケ浦市内の農家さんから\n規格外品を提供いただいております',
                             style: TextStyle(fontSize: 13, color: Colors.grey.shade500, height: 1.5),
                             textAlign: TextAlign.center,
                           ),
@@ -168,7 +168,7 @@ class _PointExchangePageState extends State<PointExchangePage> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const Text(
-                  '交換した商品の受け渡しは袖ケ浦市内に限ります。',
+                  '交換した商品の受け渡しは\n袖ケ浦市内に限ります。',
                   style: TextStyle(fontSize: 16, height: 1.4, color: Colors.black87),
                 ),
                 const SizedBox(height: 12),

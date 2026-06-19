@@ -68,6 +68,14 @@ class _GauraCollectionPageState extends State<GauraCollectionPage> {
               collected ? 'ゲット済み！' : 'まだ出会っていません',
               style: TextStyle(fontSize: 16, color: collected ? Colors.orange : Colors.grey, fontWeight: FontWeight.bold),
             ),
+            if (!collected) ...[
+              const SizedBox(height: 8),
+              Text(
+                'お店や施設を回って\nガウラくんを探してみよう！',
+                style: TextStyle(fontSize: 13, color: Colors.grey.shade500),
+                textAlign: TextAlign.center,
+              ),
+            ],
             const SizedBox(height: 20),
             ElevatedButton(
               onPressed: () => Navigator.pop(context),

@@ -100,7 +100,6 @@ class _PedometerPageState extends State<PedometerPage>
     setState(() => _isSearchingGaura = true);
 
     try {
-      // 位置情報取得
       bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
       if (!serviceEnabled) {
         _showGauraMessage('位置情報が無効です。設定から有効にしてください。');
@@ -120,14 +119,12 @@ class _PedometerPageState extends State<PedometerPage>
         locationSettings: const LocationSettings(accuracy: LocationAccuracy.high),
       );
 
-      // locations.jsonを読み込む
       final jsonString = await rootBundle.loadString('assets/locations.json');
       final data = json.decode(jsonString);
       final locations = (data['locations'] as List)
           .map((e) => WalkLocation.fromJson(e as Map<String, dynamic>))
           .toList();
 
-      // 100m以内のスポットを検索
       final nearbySpots = locations.where((loc) {
         final distance = Geolocator.distanceBetween(
           position.latitude,
@@ -143,7 +140,6 @@ class _PedometerPageState extends State<PedometerPage>
         return;
       }
 
-      // 未取得のスポットを優先
       final collected = await _storage.getCollectedGaura();
       WalkLocation targetSpot;
       final uncollected = nearbySpots.where((s) => !collected.contains(s.id)).toList();
@@ -153,10 +149,7 @@ class _PedometerPageState extends State<PedometerPage>
         targetSpot = nearbySpots.first;
       }
 
-      // ガウラくんをゲット（新規かどうか）
       final isNew = await _storage.addGaura(targetSpot.id);
-
-      // 1日1回ポイント付与
       final earnedPoints = await _storage.tryGiveGauraPoint();
 
       if (mounted) {
@@ -181,16 +174,16 @@ class _PedometerPageState extends State<PedometerPage>
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text('🔍', style: const TextStyle(fontSize: 48)),
+            const Text('🔍', style: TextStyle(fontSize: 48)),
             const SizedBox(height: 12),
             const Text(
-              '近くにはガウラくんはいないみたい。',
+              '近くにはガウラくんは\nいないみたい。',
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 8),
             Text(
-              '目的地を決めるを押してガウラくんを探そう！',
+              '目的地を決めるを押して\nガウラくんを探そう！',
               style: TextStyle(fontSize: 15, color: Colors.grey.shade600),
               textAlign: TextAlign.center,
             ),
@@ -211,7 +204,6 @@ class _PedometerPageState extends State<PedometerPage>
   }
 
   void _showGauraFound(WalkLocation spot, bool isNew, int? earnedPoints) {
-    final num = int.tryParse(spot.id.replaceAll('l', '').replaceAll('0', '')) ?? 0;
     final numStr = int.tryParse(spot.id.replaceAll('l', ''))?.toString().padLeft(3, '0') ?? '001';
 
     showDialog(
@@ -371,15 +363,27 @@ class _PedometerPageState extends State<PedometerPage>
                       ),
                     ],
                     const SizedBox(height: 40),
-                    // ガウラくんを探してポイントをゲット
-                    _buildWideButton(
-                      label: _isSearchingGaura ? '探索中...' : 'ガウラくんを探してポイントをゲット',
-                      color: Colors.purple.shade400,
-                      onPressed: _isSearchingGaura ? null : _searchGaura,
-                      fontSize: 18,
+                    SizedBox(
+                      width: screenWidth * 0.7,
+                      child: ElevatedButton(
+                        onPressed: _isSearchingGaura ? null : _searchGaura,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.purple.shade400,
+                          foregroundColor: Colors.white,
+                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 18),
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                          elevation: 4,
+                        ),
+                        child: _isSearchingGaura
+                            ? const Text('探索中...', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold))
+                            : const Text(
+                                'ガウラくんを探して\nポイントゲット',
+                                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                                textAlign: TextAlign.center,
+                              ),
+                      ),
                     ),
                     const SizedBox(height: 16),
-                    // 目的地を決める
                     _buildWideButton(
                       label: '目的地を決める',
                       color: Colors.green,
@@ -392,7 +396,6 @@ class _PedometerPageState extends State<PedometerPage>
                       fontSize: 20,
                     ),
                     const SizedBox(height: 16),
-                    // ガウラ図鑑
                     _buildWideButton(
                       label: 'ガウラ図鑑',
                       color: Colors.indigo.shade400,
