@@ -1,10 +1,6 @@
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 
-/// アプリ内のローカルデータ（ポイント・歩数・連携状態）の読み書きを
-/// 一元管理するサービスクラス。
-///
-/// SharedPreferencesへの直接アクセスは、このクラスを経由して行う。
 class StorageService {
   static const String _pointsKey = 'user_points';
   static const String _phoneLinkedKey = 'is_phone_linked';
@@ -52,7 +48,6 @@ class StorageService {
 
   String _monthKey(DateTime date) => "${date.year}-${date.month}";
 
-  /// 指定した月の歩数データ（日付文字列 -> 歩数）を取得する
   Future<Map<String, int>> getMonthSteps(int year, int month) async {
     final prefs = await SharedPreferences.getInstance();
     final key = _monthKey(DateTime(year, month));
@@ -62,41 +57,33 @@ class StorageService {
     return decoded.map((k, v) => MapEntry(k, v as int));
   }
 
-  /// 指定した日の歩数を取得する
   Future<int> getStepsForDay(DateTime date) async {
     final monthData = await getMonthSteps(date.year, date.month);
     return monthData[date.day.toString()] ?? 0;
   }
 
-  /// 指定した日の歩数に加算する（テスト用ボタンや将来のセンサー連携から呼ぶ）
   Future<int> addStepsForDay(DateTime date, int addedSteps) async {
     final prefs = await SharedPreferences.getInstance();
     final key = _monthKey(date);
     final savedJson = prefs.getString(key);
     Map<String, dynamic> monthData =
         savedJson != null ? json.decode(savedJson) : {};
-
     final dayKey = date.day.toString();
     final current = monthData[dayKey] ?? 0;
     final updated = current + addedSteps;
     monthData[dayKey] = updated;
-
     await prefs.setString(key, json.encode(monthData));
     return updated;
   }
 
-  /// 指定した日の歩数を、指定した値で直接上書きする
-  /// （歩数センサーから取得した「今日の合計歩数」をそのまま保存する用途）
   Future<void> setStepsForDay(DateTime date, int steps) async {
     final prefs = await SharedPreferences.getInstance();
     final key = _monthKey(date);
     final savedJson = prefs.getString(key);
     Map<String, dynamic> monthData =
         savedJson != null ? json.decode(savedJson) : {};
-
     final dayKey = date.day.toString();
     monthData[dayKey] = steps;
-
     await prefs.setString(key, json.encode(monthData));
   }
 
@@ -115,29 +102,22 @@ class StorageService {
     await prefs.setBool(_rewardCheckKey(date), true);
   }
 
-  /// 歩数に応じた獲得ポイントを計算する（5001歩以上で5pt、8001歩以上で10pt）
   int calculateEarnedPoints(int steps) {
-    if (steps >= 8001) return 10;
-    if (steps >= 5001) return 5;
+    if (steps >= 8000) return 10;
+    if (steps >= 5000) return 5;
     return 0;
   }
 
-  /// 前日の歩数に応じてポイントを未付与なら付与する。
-  /// 付与があった場合は (獲得ポイント, 加算後の合計ポイント) を返す。未付与/対象外ならnull。
   Future<RewardResult?> processYesterdayReward() async {
     final now = DateTime.now();
     final yesterday = now.subtract(const Duration(days: 1));
-
     final alreadyRewarded = await isRewardAlreadyGiven(yesterday);
     if (alreadyRewarded) return null;
-
     final steps = await getStepsForDay(yesterday);
     final earnedPoints = calculateEarnedPoints(steps);
     if (earnedPoints <= 0) return null;
-
     final totalPoints = await addPoints(earnedPoints);
     await markRewardGiven(yesterday);
-
     return RewardResult(
       steps: steps,
       earnedPoints: earnedPoints,
@@ -160,20 +140,81 @@ class StorageService {
     await prefs.setBool(_loginBonusCheckKey(date), true);
   }
 
-  /// 今日まだログインボーナスを受け取っていなければ1ポイント付与する。
-  /// 付与した場合は加算後の合計ポイントを返す。すでに受け取り済みならnullを返す。
   Future<int?> processTodayLoginBonus() async {
     final today = DateTime.now();
     final alreadyGiven = await isLoginBonusAlreadyGiven(today);
     if (alreadyGiven) return null;
-
     final totalPoints = await addPoints(1);
     await markLoginBonusGiven(today);
     return totalPoints;
   }
+
+  // --- 到着ボーナス関連 ---
+
+  static const String _arrivalBonusDateKey = 'arrival_bonus_date';
+  static const String _arrivalBonusLocationKey = 'arrival_bonus_location';
+
+  /// 今日すでに到着ボーナスを取得済みかチェック
+  Future<bool> hasArrivalBonusToday() async {
+    final prefs = await SharedPreferences.getInstance();
+    final savedDate = prefs.getString(_arrivalBonusDateKey);
+    if (savedDate == null) return false;
+    final today = DateTime.now();
+    final todayStr = '${today.year}-${today.month}-${today.day}';
+    return savedDate == todayStr;
+  }
+
+  /// 今日到着ボーナスを取得した場所のIDを取得
+  Future<String?> getTodayArrivalLocationId() async {
+    final prefs = await SharedPreferences.getInstance();
+    final savedDate = prefs.getString(_arrivalBonusDateKey);
+    if (savedDate == null) return null;
+    final today = DateTime.now();
+    final todayStr = '${today.year}-${today.month}-${today.day}';
+    if (savedDate != todayStr) return null;
+    return prefs.getString(_arrivalBonusLocationKey);
+  }
+
+  /// 到着ボーナスを付与して記録する
+  Future<int> giveArrivalBonus(String locationId) async {
+    final prefs = await SharedPreferences.getInstance();
+    final today = DateTime.now();
+    final todayStr = '${today.year}-${today.month}-${today.day}';
+    await prefs.setString(_arrivalBonusDateKey, todayStr);
+    await prefs.setString(_arrivalBonusLocationKey, locationId);
+    // ガウラくんを追加
+    await addGaura(locationId);
+    return await addPoints(5);
+  }
+
+  // --- ガウラくん収集関連 ---
+
+  static const String _gauraKey = 'collected_gaura';
+
+  /// 収集済みガウラくんのIDセットを取得
+  Future<Set<String>> getCollectedGaura() async {
+    final prefs = await SharedPreferences.getInstance();
+    final list = prefs.getStringList(_gauraKey) ?? [];
+    return list.toSet();
+  }
+
+  /// ガウラくんを追加
+  Future<void> addGaura(String locationId) async {
+    final prefs = await SharedPreferences.getInstance();
+    final list = prefs.getStringList(_gauraKey) ?? [];
+    if (!list.contains(locationId)) {
+      list.add(locationId);
+      await prefs.setStringList(_gauraKey, list);
+    }
+  }
+
+  /// 指定したガウラくんを取得済みかチェック
+  Future<bool> hasGaura(String locationId) async {
+    final collected = await getCollectedGaura();
+    return collected.contains(locationId);
+  }
 }
 
-/// 前日の歩数報酬処理の結果を表すクラス
 class RewardResult {
   final int steps;
   final int earnedPoints;

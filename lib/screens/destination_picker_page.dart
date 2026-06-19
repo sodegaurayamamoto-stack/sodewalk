@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../models/location.dart';
 import '../services/location_picker_service.dart';
+import '../services/storage_service.dart';
 
 class DestinationPickerPage extends StatelessWidget {
   const DestinationPickerPage({super.key});
@@ -91,13 +93,20 @@ class DestinationResultPage extends StatefulWidget {
 }
 
 class _DestinationResultPageState extends State<DestinationResultPage> {
+  final StorageService _storage = StorageService();
+
   List<WalkLocation> _locations = [];
   double? _currentLat;
   double? _currentLng;
   DestinationResult? _result;
   bool _isLoading = true;
   String? _errorMessage;
-  String? _lastLocationId; // 直前に選ばれた目的地のID
+  String? _lastLocationId;
+
+  // 到着ボーナス関連
+  double? _distanceToDestination;
+  bool _arrivalBonusAlreadyTaken = false;
+  bool _isCheckingArrival = false;
 
   @override
   void initState() {
@@ -125,6 +134,10 @@ class _DestinationResultPageState extends State<DestinationResultPage> {
     _locations = locations;
     _currentLat = position.latitude;
     _currentLng = position.longitude;
+
+    // 今日すでに到着ボーナスを取得済みか確認
+    _arrivalBonusAlreadyTaken = await _storage.hasArrivalBonusToday();
+
     _pickNewDestination();
   }
 
@@ -135,11 +148,12 @@ class _DestinationResultPageState extends State<DestinationResultPage> {
       currentLat: _currentLat!,
       currentLng: _currentLng!,
       targetSteps: widget.targetSteps,
-      excludeLocationId: _lastLocationId, // 直前と同じ場所を除外
+      excludeLocationId: _lastLocationId,
     );
     setState(() {
       _result = result;
-      _lastLocationId = result?.location.id; // 今回選ばれたIDを記録
+      _lastLocationId = result?.location.id;
+      _distanceToDestination = result?.distanceMeters;
       _isLoading = false;
     });
   }
@@ -151,6 +165,105 @@ class _DestinationResultPageState extends State<DestinationResultPage> {
       'https://www.google.com/maps/dir/?api=1&destination=${result.location.lat},${result.location.lng}',
     );
     await launchUrl(url, mode: LaunchMode.externalApplication);
+  }
+
+  Future<void> _checkArrivalAndGiveBonus() async {
+    final result = _result;
+    if (result == null) return;
+
+    setState(() => _isCheckingArrival = true);
+
+    try {
+      final position = await Geolocator.getCurrentPosition(
+        locationSettings: const LocationSettings(accuracy: LocationAccuracy.high),
+      );
+
+      final distance = Geolocator.distanceBetween(
+        position.latitude,
+        position.longitude,
+        result.location.lat,
+        result.location.lng,
+      );
+
+      setState(() => _distanceToDestination = distance);
+
+      if (distance <= 100) {
+        // 100m以内なのでボーナス付与
+        final newPoints = await _storage.giveArrivalBonus(result.location.id);
+        setState(() {
+          _arrivalBonusAlreadyTaken = true;
+          _isCheckingArrival = false;
+        });
+        if (!mounted) return;
+        _showArrivalBonusDialog(newPoints, result.location.id);
+      } else {
+        setState(() => _isCheckingArrival = false);
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('まだ到着していません。あと${(distance - 100).toStringAsFixed(0)}m近づいてください'),
+            backgroundColor: Colors.orange,
+          ),
+        );
+      }
+    } catch (e) {
+      setState(() => _isCheckingArrival = false);
+    }
+  }
+
+  void _showArrivalBonusDialog(int newPoints, String locationId) {
+    final num = int.tryParse(locationId.replaceAll('l', '')) ?? 0;
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        contentPadding: const EdgeInsets.all(24),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Text('🎉', style: TextStyle(fontSize: 48)),
+            const SizedBox(height: 12),
+            const Text('到着ボーナス！', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.orange)),
+            const SizedBox(height: 8),
+            const Text('+5pt 獲得！', style: TextStyle(fontSize: 20, color: Colors.orange, fontWeight: FontWeight.bold)),
+            const SizedBox(height: 12),
+            Text('合計: $newPoints pt', style: TextStyle(fontSize: 16, color: Colors.grey.shade600)),
+            const SizedBox(height: 16),
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: Colors.orange.shade50,
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: Colors.orange.shade200),
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Image.asset(
+                    'assets/gaura/gaura_${num.toString().padLeft(3, '0')}.png',
+                    width: 60,
+                    height: 60,
+                  ),
+                  const SizedBox(width: 12),
+                  Text('No.${num.toString().padLeft(3, '0')} をゲット！',
+                      style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                ],
+              ),
+            ),
+            const SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: () => Navigator.pop(context),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.orange,
+                foregroundColor: Colors.white,
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              ),
+              child: const Text('閉じる', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 
   @override
@@ -213,6 +326,8 @@ class _DestinationResultPageState extends State<DestinationResultPage> {
     }
 
     final distanceKm = (result.distanceMeters / 1000).toStringAsFixed(1);
+    final isNearby = (_distanceToDestination ?? double.infinity) <= 100;
+    final canGetBonus = isNearby && !_arrivalBonusAlreadyTaken;
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 24.0),
@@ -267,7 +382,37 @@ class _DestinationResultPageState extends State<DestinationResultPage> {
               ),
             ),
           ),
-          const SizedBox(height: 32),
+          const SizedBox(height: 20),
+          // 到着ボーナスボタン
+          SizedBox(
+            width: double.infinity,
+            child: ElevatedButton.icon(
+              onPressed: (_arrivalBonusAlreadyTaken || _isCheckingArrival)
+                  ? null
+                  : _checkArrivalAndGiveBonus,
+              icon: _isCheckingArrival
+                  ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
+                  : Icon(_arrivalBonusAlreadyTaken ? Icons.check_circle : Icons.place),
+              label: Text(
+                _arrivalBonusAlreadyTaken ? '本日の到着ボーナス取得済み' : 'ここに到着！+5pt',
+                style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              ),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: _arrivalBonusAlreadyTaken ? Colors.grey : Colors.green,
+                foregroundColor: Colors.white,
+                disabledBackgroundColor: Colors.grey.shade300,
+                disabledForegroundColor: Colors.grey.shade600,
+                padding: const EdgeInsets.symmetric(vertical: 18),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+              ),
+            ),
+          ),
+          if (_arrivalBonusAlreadyTaken)
+            Padding(
+              padding: const EdgeInsets.only(top: 6),
+              child: Text('到着ボーナスは1日1カ所までです', style: TextStyle(fontSize: 12, color: Colors.grey.shade500), textAlign: TextAlign.center),
+            ),
+          const SizedBox(height: 12),
           SizedBox(
             width: double.infinity,
             child: OutlinedButton.icon(
