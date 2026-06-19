@@ -19,7 +19,7 @@ class DestinationResult {
 
 class LocationPickerService {
   /// 平均的な1歩の歩幅（メートル）
-  static const double stepLengthMeters = 0.7;
+  static const double stepLengthMeters = 0.5;
 
   /// assets/locations.json から場所一覧を読み込む
   static Future<List<WalkLocation>> loadLocations() async {
@@ -59,9 +59,9 @@ class LocationPickerService {
     return totalDistance / 2;
   }
 
-  /// 現在地から各候補地までの距離を計算し、目標の片道距離に
-  /// 最も近いものから順にソートして、その中からランダムに選ぶ。
-  /// （近い順の上位グループから選ぶことで、極端に遠い・近い候補を避ける）
+  /// 現在地から各候補地までの距離を計算し、目標の片道距離の
+  /// 1.0〜1.3倍かつ±500m以内の候補からランダムに選ぶ。
+  /// 候補が0件の場合は目標距離に最も近い場所を返す。
   static DestinationResult? pickDestination({
     required List<WalkLocation> locations,
     required double currentLat,
@@ -71,8 +71,14 @@ class LocationPickerService {
     if (locations.isEmpty) return null;
 
     final targetDistance = targetOneWayDistance(targetSteps);
+    // 目標距離の1.0〜1.3倍の範囲（少し超えるくらいを狙う）
+    final minDistance = targetDistance;
+    final maxDistance = targetDistance * 1.3;
+    // さらに±500mのレンジに絞る
+    final lowerBound = targetDistance - 500;
+    final upperBound = targetDistance * 1.3 + 500;
 
-    final scored = locations.map((loc) {
+    final allScored = locations.map((loc) {
       final distance = Geolocator.distanceBetween(
         currentLat,
         currentLng,
@@ -83,12 +89,24 @@ class LocationPickerService {
       return _ScoredLocation(location: loc, distance: distance, diff: diff);
     }).toList();
 
-    scored.sort((a, b) => a.diff.compareTo(b.diff));
+    // 目標レンジ内の候補を絞る
+    final pool = allScored.where((s) =>
+      s.distance >= lowerBound &&
+      s.distance <= upperBound &&
+      s.distance >= minDistance &&
+      s.distance <= maxDistance
+    ).toList();
 
-    // 目標距離に近い上位5件（または全件、少ない場合はそちら）からランダムに選ぶ
-    final poolSize = min(5, scored.length);
-    final pool = scored.sublist(0, poolSize);
-    final chosen = pool[Random().nextInt(pool.length)];
+    _ScoredLocation chosen;
+    if (pool.isNotEmpty) {
+      // レンジ内からランダムに選ぶ
+      pool.shuffle(Random());
+      chosen = pool.first;
+    } else {
+      // 候補なしの場合は目標距離に最も近い場所にフォールバック
+      allScored.sort((a, b) => a.diff.compareTo(b.diff));
+      chosen = allScored.first;
+    }
 
     final bearing = Geolocator.bearingBetween(
       currentLat,
