@@ -4,7 +4,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 class StorageService {
   static const String _pointsKey = 'user_points';
   static const String _phoneLinkedKey = 'is_phone_linked';
-  static const int defaultPoints = 1250;
+  static const int defaultPoints = 0;
 
   // --- ポイント関連 ---
 
