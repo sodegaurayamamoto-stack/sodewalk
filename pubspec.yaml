@@ -35,6 +35,7 @@ flutter:
     - assets/vegetables.json
     - assets/recipes.json
     - assets/locations.json
+    - assets/gaura.json
     - assets/gaura/
 
 
