@@ -28,25 +28,17 @@ class WalkLocation {
   String get categoryLabel {
     switch (category) {
       case 'dining':
-        return '飲食店・カフェ';
+        return '飲食店';
       case 'shopping':
         return 'ショッピング';
       case 'leisure':
-        return 'レジャー・農園';
+        return '遊び';
       case 'rest':
-        return '公園・休憩スポット';
-      case 'transit':
-        return '駅・バス停';
+        return '休憩スポット';
       case 'public':
         return '公共施設';
-      case 'finance':
-        return '銀行・郵便局';
-      case 'medical':
-        return '医療・健康';
-      case 'shrine':
-        return '神社・お寺';
-      case 'beauty':
-        return '美容・理髪';
+      case 'life':
+        return '生活';
       default:
         return 'その他';
     }
