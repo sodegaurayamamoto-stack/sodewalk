@@ -161,14 +161,13 @@ class _GauraCollectionPageState extends State<GauraCollectionPage> {
                        crossAxisCount: 5,
                        crossAxisSpacing: 6,
                        mainAxisSpacing: 6,
-                       childAspectRatio: 0.75,
+                       childAspectRatio: 0.85,
                      ),
                      itemCount: _gauraList.length,
                      itemBuilder: (context, index) {
                        final item = _gauraList[index];
                        final id = item['id'] as String;
                        final collected = _collectedIds.contains(id);
-                       final gauraName = _getGauraName(item);
 
                        return GestureDetector(
                          onTap: () => _showDetail(item, collected),
@@ -196,13 +195,6 @@ class _GauraCollectionPageState extends State<GauraCollectionPage> {
                                'No.$id',
                                style: TextStyle(fontSize: 9, color: collected ? Colors.orange.shade700 : Colors.grey.shade500, fontWeight: FontWeight.bold),
                              ),
-                             if (gauraName.isNotEmpty)
-                               Text(
-                                 gauraName,
-                                 style: TextStyle(fontSize: 8, color: collected ? Colors.orange.shade600 : Colors.grey.shade400),
-                                 maxLines: 1,
-                                 overflow: TextOverflow.ellipsis,
-                               ),
                            ],
                          ),
                        );
