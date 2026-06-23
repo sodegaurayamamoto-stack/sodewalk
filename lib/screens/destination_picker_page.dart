@@ -238,8 +238,10 @@ class _DestinationResultPageState extends State<DestinationResultPage> {
                   Text(result.location.categoryLabel, style: TextStyle(fontSize: 16, color: Colors.orange.shade700, fontWeight: FontWeight.bold)),
                   const SizedBox(height: 8),
                   Text(
-                    result.location.name,
-                    style: const TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
+                    result.location.name.length > 20
+                        ? '${result.location.name.substring(0, 20)}…'
+                        : result.location.name,
+                    style: const TextStyle(fontSize: 26, fontWeight: FontWeight.bold),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),
