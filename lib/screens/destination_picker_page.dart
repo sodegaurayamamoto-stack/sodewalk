@@ -239,7 +239,7 @@ class _DestinationResultPageState extends State<DestinationResultPage> {
                  const SizedBox(height: 8),
                  Text(
                    result.location.name,
-                   style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+                   style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                    maxLines: 1,
                    overflow: TextOverflow.ellipsis,
                  ),
