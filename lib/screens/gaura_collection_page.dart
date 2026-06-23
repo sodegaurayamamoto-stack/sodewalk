@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../services/storage_service.dart';
@@ -13,8 +14,9 @@ class GauraCollectionPage extends StatefulWidget {
 class _GauraCollectionPageState extends State<GauraCollectionPage> {
   final StorageService _storage = StorageService();
   Set<String> _collectedIds = {};
-  int _totalCount = 0;
+  List<Map<String, dynamic>> _locations = [];
   bool _isLoading = true;
+  Map<String, String> _gauraImageMap = {}; // id → ファイル名
 
   @override
   void initState() {
@@ -26,15 +28,51 @@ class _GauraCollectionPageState extends State<GauraCollectionPage> {
     final collected = await _storage.getCollectedGaura();
     final jsonString = await rootBundle.loadString('assets/locations.json');
     final data = json.decode(jsonString);
-    final total = (data['locations'] as List).length;
+    final locations = (data['locations'] as List)
+        .map((e) => e as Map<String, dynamic>)
+        .toList();
+
+    // assets/gaura/配下の画像を読み込んでidとマッピング
+    final manifestContent = await rootBundle.loadString('AssetManifest.json');
+    final Map<String, dynamic> manifestMap = json.decode(manifestContent);
+    final gauraFiles = manifestMap.keys
+        .where((path) => path.startsWith('assets/gaura/') && path.endsWith('.png'))
+        .toList();
+
+    final imageMap = <String, String>{};
+    for (final path in gauraFiles) {
+      final filename = path.split('/').last; // 例: 0001_ガウラ_サッカー.png
+      final id = filename.split('_').first; // 例: 0001
+      imageMap[id] = path;
+    }
+
     setState(() {
       _collectedIds = collected;
-      _totalCount = total;
+      _locations = locations;
+      _gauraImageMap = imageMap;
       _isLoading = false;
     });
   }
 
-  void _showDetail(int num, bool collected) {
+  // ファイル名からキャラ名とアクションを取得
+  // 例: 0001_ガウラ_サッカー.png → 「ガウラ（サッカー）」
+  String _getGauraName(String id) {
+    final path = _gauraImageMap[id];
+    if (path == null) return '';
+    final filename = path.split('/').last.replaceAll('.png', '');
+    final parts = filename.split('_');
+    if (parts.length >= 3) {
+      return '${parts[1]}（${parts[2]}）';
+    } else if (parts.length == 2) {
+      return parts[1];
+    }
+    return '';
+  }
+
+  void _showDetail(String id, bool collected) {
+    final gauraName = _getGauraName(id);
+    final imagePath = _gauraImageMap[id];
+
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -43,12 +81,8 @@ class _GauraCollectionPageState extends State<GauraCollectionPage> {
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            if (collected)
-              Image.asset(
-                'assets/gaura/gaura_${num.toString().padLeft(3, '0')}.png',
-                width: 120,
-                height: 120,
-              )
+            if (collected && imagePath != null)
+              Image.asset(imagePath, width: 120, height: 120)
             else
               Container(
                 width: 120,
@@ -62,7 +96,11 @@ class _GauraCollectionPageState extends State<GauraCollectionPage> {
                 ),
               ),
             const SizedBox(height: 16),
-            Text('No.${num.toString().padLeft(3, '0')}', style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+            Text('No.$id', style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+            if (gauraName.isNotEmpty) ...[
+              const SizedBox(height: 4),
+              Text(gauraName, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.orange)),
+            ],
             const SizedBox(height: 8),
             Text(
               collected ? 'ゲット済み！' : 'まだ出会っていません',
@@ -110,7 +148,7 @@ class _GauraCollectionPageState extends State<GauraCollectionPage> {
                   ),
                   const Spacer(),
                   if (!_isLoading)
-                    Text('${_collectedIds.length} / $_totalCount', style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.orange)),
+                    Text('${_collectedIds.length} / ${_locations.length}', style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.orange)),
                 ],
               ),
             ),
@@ -134,15 +172,18 @@ class _GauraCollectionPageState extends State<GauraCollectionPage> {
                         crossAxisCount: 5,
                         crossAxisSpacing: 6,
                         mainAxisSpacing: 6,
-                        childAspectRatio: 0.85,
+                        childAspectRatio: 0.75,
                       ),
-                      itemCount: _totalCount,
+                      itemCount: _locations.length,
                       itemBuilder: (context, index) {
-                        final num = index + 1;
-                        final locationId = 'l${num.toString().padLeft(3, '0')}';
-                        final collected = _collectedIds.contains(locationId);
+                        final location = _locations[index];
+                        final id = location['id'] as String;
+                        final collected = _collectedIds.contains(id);
+                        final imagePath = _gauraImageMap[id];
+                        final gauraName = _getGauraName(id);
+
                         return GestureDetector(
-                          onTap: () => _showDetail(num, collected),
+                          onTap: () => _showDetail(id, collected),
                           child: Column(
                             children: [
                               Expanded(
@@ -156,17 +197,24 @@ class _GauraCollectionPageState extends State<GauraCollectionPage> {
                                     ),
                                   ),
                                   child: Center(
-                                    child: collected
-                                        ? Image.asset('assets/gaura/gaura_${num.toString().padLeft(3, '0')}.png', fit: BoxFit.contain)
+                                    child: collected && imagePath != null
+                                        ? Image.asset(imagePath, fit: BoxFit.contain)
                                         : Text('?', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.grey.shade400)),
                                   ),
                                 ),
                               ),
                               const SizedBox(height: 2),
                               Text(
-                                'No.${num.toString().padLeft(3, '0')}',
+                                'No.$id',
                                 style: TextStyle(fontSize: 9, color: collected ? Colors.orange.shade700 : Colors.grey.shade500, fontWeight: FontWeight.bold),
                               ),
+                              if (gauraName.isNotEmpty)
+                                Text(
+                                  gauraName,
+                                  style: TextStyle(fontSize: 8, color: collected ? Colors.orange.shade600 : Colors.grey.shade400),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
                             ],
                           ),
                         );
