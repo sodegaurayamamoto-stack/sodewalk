@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'dart:convert';
+import 'package:url_launcher/url_launcher.dart'; // ← これを追加
 import '../models/vegetable.dart';
 import '../services/storage_service.dart';
 import 'order_form_page.dart';
@@ -17,6 +18,7 @@ class _PointExchangePageState extends State<PointExchangePage> {
 
   List<Vegetable> _vegetables = [];
   bool _isLoading = true;
+  bool _isVersionOk = true;
 
   @override
   void initState() {
@@ -28,19 +30,43 @@ class _PointExchangePageState extends State<PointExchangePage> {
     try {
       final jsonString = await rootBundle.loadString('assets/vegetables.json');
       final data = json.decode(jsonString);
+
+      final latestVersion = data['latest_version'] as String? ?? '1.0.0';
+      const currentVersion = '1.0.0';
+      final isVersionOk = _compareVersion(currentVersion, latestVersion);
+
       final items = (data['items'] as List<dynamic>? ?? [])
           .map((item) => Vegetable.fromJson(item as Map<String, dynamic>))
           .toList();
+
       setState(() {
         _vegetables = items;
+        _isVersionOk = isVersionOk;
         _isLoading = false;
       });
     } catch (e) {
       setState(() {
-        _vegetables = [Vegetable(id: 'daikon', name: '大根', points: 200)];
+        _vegetables = [];
         _isLoading = false;
       });
     }
+  }
+
+  bool _compareVersion(String current, String latest) {
+    final c = current.split('.').map(int.parse).toList();
+    final l = latest.split('.').map(int.parse).toList();
+    for (int i = 0; i < 3; i++) {
+      final cv = i < c.length ? c[i] : 0;
+      final lv = i < l.length ? l[i] : 0;
+      if (cv > lv) return true;
+      if (cv < lv) return false;
+    }
+    return true;
+  }
+
+  void _openGooglePlay() async {
+    final url = Uri.parse('https://play.google.com/store/apps/details?id=com.sodewalk.app');
+    await launchUrl(url, mode: LaunchMode.externalApplication);
   }
 
   @override
@@ -62,28 +88,30 @@ class _PointExchangePageState extends State<PointExchangePage> {
             Expanded(
               child: _isLoading
                   ? const Center(child: CircularProgressIndicator())
-                  : Column(
-                      children: [
-                        Expanded(
-                          child: ListView.builder(
-                            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                            itemCount: _vegetables.length,
-                            itemBuilder: (context, index) {
-                              final item = _vegetables[index];
-                              return _buildVegetableCard(context, item.name, item.points);
-                            },
-                          ),
+                  : !_isVersionOk
+                      ? _buildUpdateRequired()
+                      : Column(
+                          children: [
+                            Expanded(
+                              child: ListView.builder(
+                                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                                itemCount: _vegetables.length,
+                                itemBuilder: (context, index) {
+                                  final item = _vegetables[index];
+                                  return _buildVegetableCard(context, item);
+                                },
+                              ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+                              child: Text(
+                                '※野菜は袖ケ浦市内の農家さんから\n規格外品を提供いただいております',
+                                style: TextStyle(fontSize: 13, color: Colors.grey.shade500, height: 1.5),
+                                textAlign: TextAlign.center,
+                              ),
+                            ),
+                          ],
                         ),
-                        Padding(
-                          padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-                          child: Text(
-                            '※野菜は袖ケ浦市内の農家さんから\n規格外品を提供いただいております',
-                            style: TextStyle(fontSize: 13, color: Colors.grey.shade500, height: 1.5),
-                            textAlign: TextAlign.center,
-                          ),
-                        ),
-                      ],
-                    ),
             ),
           ],
         ),
@@ -91,15 +119,58 @@ class _PointExchangePageState extends State<PointExchangePage> {
     );
   }
 
-  Widget _buildVegetableCard(BuildContext context, String name, int requiredPoints) {
+  Widget _buildUpdateRequired() {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(32.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.system_update, size: 80, color: Colors.orange.shade300),
+            const SizedBox(height: 24),
+            const Text(
+              'アップデートが必要です',
+              style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 16),
+            Text(
+              '最新バージョンのアプリでのみ\nポイント交換ができます。\nGoogle Playからアップデートしてください。',
+              style: TextStyle(fontSize: 16, color: Colors.grey.shade600, height: 1.5),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 32),
+            ElevatedButton.icon(
+              onPressed: _openGooglePlay,
+              icon: const Icon(Icons.open_in_new),
+              label: const Text('Google Playを開く', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.orange,
+                foregroundColor: Colors.white,
+                padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildVegetableCard(BuildContext context, Vegetable item) {
+    final isActive = item.active;
+
     return Container(
       width: double.infinity,
       margin: const EdgeInsets.only(bottom: 20),
       padding: const EdgeInsets.fromLTRB(20, 20, 20, 24),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: isActive ? Colors.white : Colors.grey.shade50,
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: Colors.grey.shade300, width: 2),
+        border: Border.all(
+          color: isActive ? Colors.grey.shade300 : Colors.grey.shade200,
+          width: 2,
+        ),
         boxShadow: [
           BoxShadow(color: Colors.grey.shade100, blurRadius: 6, offset: const Offset(0, 3)),
         ],
@@ -113,37 +184,59 @@ class _PointExchangePageState extends State<PointExchangePage> {
             children: [
               Expanded(
                 child: Text(
-                  name,
-                  style: const TextStyle(fontSize: 30, fontWeight: FontWeight.bold, color: Colors.black87),
+                  item.name,
+                  style: TextStyle(
+                    fontSize: 30,
+                    fontWeight: FontWeight.bold,
+                    color: isActive ? Colors.black87 : Colors.grey.shade400,
+                  ),
                   overflow: TextOverflow.ellipsis,
                 ),
               ),
               const SizedBox(width: 12),
-              Text('$requiredPoints pt', style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.orange)),
+              Text(
+                '${item.points} pt',
+                style: TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                  color: isActive ? Colors.orange : Colors.grey.shade400,
+                ),
+              ),
             ],
+          ),
+          const SizedBox(height: 4),
+          Text(
+            '提供：${item.provider}',
+            style: TextStyle(fontSize: 13, color: Colors.grey.shade500),
           ),
           const SizedBox(height: 16),
           SizedBox(
             width: double.infinity,
             child: ElevatedButton(
-              onPressed: () async {
-                final currentPoints = await _storage.getPoints();
-                if (currentPoints >= requiredPoints) {
-                  if (!mounted) return;
-                  _showLocationConfirmDialog(context, name, requiredPoints);
-                } else {
-                  if (!mounted) return;
-                  _showShortageDialog(context, requiredPoints - currentPoints);
-                }
-              },
+              onPressed: isActive
+                  ? () async {
+                      final currentPoints = await _storage.getPoints();
+                      if (!mounted) return;
+                      if (currentPoints >= item.points) {
+                        _showLocationConfirmDialog(context, item.name, item.points);
+                      } else {
+                        _showShortageDialog(context, item.points - currentPoints);
+                      }
+                    }
+                  : null,
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.orange,
                 foregroundColor: Colors.white,
+                disabledBackgroundColor: Colors.grey.shade200,
+                disabledForegroundColor: Colors.grey.shade400,
                 padding: const EdgeInsets.symmetric(vertical: 16),
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                 elevation: 0,
               ),
-              child: const Text('交換する', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+              child: Text(
+                isActive ? '交換する' : '現在取り扱いなし',
+                style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              ),
             ),
           ),
         ],
