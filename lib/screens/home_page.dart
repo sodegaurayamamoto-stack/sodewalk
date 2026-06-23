@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../services/storage_service.dart';
 import '../widgets/reward_dialog.dart';
 import 'data_transfer_page.dart';
 import 'pedometer_page.dart';
 import 'eat_main_page.dart';
+import 'point_restore_page.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -23,7 +25,6 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future<void> _loadInitialData() async {
-    // 前日の歩数報酬
     final reward = await _storage.processYesterdayReward();
     if (reward != null && mounted) {
       setState(() => _points = reward.totalPoints);
@@ -34,7 +35,6 @@ class _HomePageState extends State<HomePage> {
       );
     }
 
-    // ログインボーナス
     final loginBonus = await _storage.processTodayLoginBonus();
     if (loginBonus != null && mounted) {
       setState(() => _points = loginBonus);
@@ -97,6 +97,13 @@ class _HomePageState extends State<HomePage> {
     ).then((_) => _loadInitialData());
   }
 
+  void _openPointRestore() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const PointRestorePage()),
+    ).then((_) => _loadInitialData());
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -124,20 +131,41 @@ class _HomePageState extends State<HomePage> {
             ),
             Padding(
               padding: const EdgeInsets.only(bottom: 8.0),
-              child: GestureDetector(
-                onTap: _openDataTransfer,
-                child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                  decoration: BoxDecoration(
-                    color: Colors.grey.shade100,
-                    borderRadius: BorderRadius.circular(8),
-                    border: Border.all(color: Colors.grey.shade300, width: 1),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  GestureDetector(
+                    onTap: _openDataTransfer,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                      decoration: BoxDecoration(
+                        color: Colors.grey.shade100,
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(color: Colors.grey.shade300, width: 1),
+                      ),
+                      child: Text(
+                        'データ移行',
+                        style: TextStyle(fontSize: 13, color: Colors.grey.shade500),
+                      ),
+                    ),
                   ),
-                  child: Text(
-                    'データ移行',
-                    style: TextStyle(fontSize: 13, color: Colors.grey.shade500),
+                  const SizedBox(width: 12),
+                  GestureDetector(
+                    onTap: _openPointRestore,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                      decoration: BoxDecoration(
+                        color: Colors.grey.shade100,
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(color: Colors.grey.shade300, width: 1),
+                      ),
+                      child: Text(
+                        'ポイント復元',
+                        style: TextStyle(fontSize: 13, color: Colors.grey.shade500),
+                      ),
+                    ),
                   ),
-                ),
+                ],
               ),
             ),
             Padding(
