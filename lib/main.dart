@@ -1,11 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:timezone/data/latest.dart' as tz;
 import 'screens/home_page.dart';
 import 'screens/terms_page.dart';
+import 'services/notification_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  tz.initializeTimeZones();
+  await NotificationService.initialize();
+  await NotificationService.scheduleDailyNotification();
   final prefs = await SharedPreferences.getInstance();
   final agreed = prefs.getBool('terms_agreed') ?? false;
   runApp(MyApp(showTerms: !agreed));

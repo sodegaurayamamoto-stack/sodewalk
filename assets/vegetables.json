@@ -1,4 +1,5 @@
 {
+  "latest_version": "1.0.0",
   "disabled_saturdays": [
     "2026-05-30",
     "2026-06-13"
@@ -7,7 +8,30 @@
     {
       "id": "daikon",
       "name": "大根",
-      "points": 200
+      "points": 200,
+      "active": true,
+      "provider": "（株）エバタケ"
+    },
+    {
+      "id": "corn",
+      "name": "とうもろこし",
+      "points": 300,
+      "active": false,
+      "provider": "（株）エバタケ"
+    },
+    {
+      "id": "peanut",
+      "name": "落花生",
+      "points": 500,
+      "active": false,
+      "provider": "（株）エバタケ"
+    },
+    {
+      "id": "sweetpotato",
+      "name": "さつまいも",
+      "points": 300,
+      "active": false,
+      "provider": "（株）エバタケ"
     }
   ]
 }

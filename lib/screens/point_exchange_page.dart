@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'dart:convert';
-import 'package:url_launcher/url_launcher.dart'; // ← これを追加
+import 'package:url_launcher/url_launcher.dart';
 import '../models/vegetable.dart';
 import '../services/storage_service.dart';
 import 'order_form_page.dart';
@@ -247,48 +247,83 @@ class _PointExchangePageState extends State<PointExchangePage> {
   void _showLocationConfirmDialog(BuildContext context, String name, int points) {
     final screenWidth = MediaQuery.of(context).size.width;
     final dialogWidth = screenWidth * 0.8;
+    bool isChecked = false;
 
     showDialog(
       context: context,
       builder: (context) {
-        return AlertDialog(
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-          title: const Text('確認', style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
-          content: SizedBox(
-            width: dialogWidth,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text(
-                  '交換した商品の受け渡しは\n袖ケ浦市内に限ります。',
-                  style: TextStyle(fontSize: 16, height: 1.4, color: Colors.black87),
+        return StatefulBuilder(
+          builder: (context, setDialogState) {
+            return AlertDialog(
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+              title: const Text('確認', style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
+              content: SizedBox(
+                width: dialogWidth,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      '交換した商品の受け渡しは\n袖ケ浦市内に限ります。',
+                      style: TextStyle(fontSize: 16, height: 1.4, color: Colors.black87),
+                    ),
+                    const SizedBox(height: 12),
+                    Text(
+                      'お名前・ご住所・電話番号に誤りがある場合、商品をお渡しできない可能性がありますので、次の画面で入力内容をご確認ください。',
+                      style: TextStyle(fontSize: 14, height: 1.4, color: Colors.grey.shade700),
+                    ),
+                    const SizedBox(height: 16),
+                    Row(
+                      children: [
+                        Checkbox(
+                          value: isChecked,
+                          activeColor: Colors.orange,
+                          onChanged: (value) {
+                            setDialogState(() => isChecked = value ?? false);
+                          },
+                        ),
+                        Expanded(
+                          child: GestureDetector(
+                            onTap: () {
+                              setDialogState(() => isChecked = !isChecked);
+                            },
+                            child: const Text(
+                              '規格外品であることを理解しました',
+                              style: TextStyle(fontSize: 14),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
                 ),
-                const SizedBox(height: 12),
-                Text(
-                  'お名前・ご住所・電話番号に誤りがある場合、商品をお渡しできない可能性がありますので、次の画面で入力内容をご確認ください。',
-                  style: TextStyle(fontSize: 14, height: 1.4, color: Colors.grey.shade700),
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: const Text('キャンセル', style: TextStyle(fontSize: 16, color: Colors.grey, fontWeight: FontWeight.bold)),
+                ),
+                ElevatedButton(
+                  onPressed: isChecked
+                      ? () {
+                          Navigator.pop(context);
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => OrderFormPage(itemName: name, itemPoints: points)),
+                          );
+                        }
+                      : null,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.orange,
+                    foregroundColor: Colors.white,
+                    disabledBackgroundColor: Colors.grey.shade200,
+                    disabledForegroundColor: Colors.grey.shade400,
+                  ),
+                  child: const Text('進む', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
                 ),
               ],
-            ),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: const Text('キャンセル', style: TextStyle(fontSize: 16, color: Colors.grey, fontWeight: FontWeight.bold)),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.pop(context);
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => OrderFormPage(itemName: name, itemPoints: points)),
-                );
-              },
-              style: ElevatedButton.styleFrom(backgroundColor: Colors.orange, foregroundColor: Colors.white),
-              child: const Text('進む', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-            ),
-          ],
+            );
+          },
         );
       },
     );
