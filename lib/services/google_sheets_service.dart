@@ -16,23 +16,23 @@ class GoogleSheetsService {
     required String preferredDate,
   }) async {
     try {
-      final response = await http.post(
-        Uri.parse(_scriptUrl),
-        headers: {'Content-Type': 'application/json'},
-        body: json.encode({
-          'name': name,
-          'address': address,
-          'phone': phone,
-          'itemName': itemName,
-          'itemPoints': itemPoints,
-          'preferredDate': preferredDate,
-        }),
-      );
+      // GASはPOSTに対して302リダイレクトを返す仕様のため、
+      // クエリパラメータ付きのGETリクエストで送信する
+      final uri = Uri.parse(_scriptUrl).replace(queryParameters: {
+        'name': name,
+        'address': address,
+        'phone': phone,
+        'itemName': itemName,
+        'itemPoints': itemPoints.toString(),
+        'preferredDate': preferredDate,
+      });
+
+      final response = await http.get(uri);
 
       GoogleSheetsService.lastDebugInfo =
           'statusCode: ${response.statusCode}\nbody: ${response.body}';
 
-      if (response.statusCode == 200 || response.statusCode == 302) {
+      if (response.statusCode == 200) {
         return response.body.contains('success');
       }
       return false;

@@ -97,13 +97,13 @@ class _RecipeVegetableListPageState extends State<RecipeVegetableListPage> {
           width: double.infinity,
           padding: const EdgeInsets.symmetric(vertical: 28, horizontal: 24),
           decoration: BoxDecoration(
-            color: Colors.green.shade50,
+            color: Colors.deepPurple.shade50,
             borderRadius: BorderRadius.circular(20),
-            border: Border.all(color: Colors.green.shade300, width: 2),
+            border: Border.all(color: Colors.deepPurple.shade200, width: 2),
           ),
           child: Row(
             children: [
-              const Icon(Icons.eco, color: Colors.green, size: 56),
+              const Icon(Icons.eco, color: Colors.deepPurple, size: 56),
               const SizedBox(width: 20),
               Expanded(
                 child: Column(
@@ -112,6 +112,8 @@ class _RecipeVegetableListPageState extends State<RecipeVegetableListPage> {
                     Text(
                       group.name,
                       style: const TextStyle(fontSize: 32, fontWeight: FontWeight.bold, color: Colors.black87),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                     ),
                     const SizedBox(height: 6),
                     Text(
@@ -121,7 +123,7 @@ class _RecipeVegetableListPageState extends State<RecipeVegetableListPage> {
                   ],
                 ),
               ),
-              const Icon(Icons.chevron_right, color: Colors.green, size: 32),
+              const Icon(Icons.chevron_right, color: Colors.deepPurple, size: 32),
             ],
           ),
         ),
@@ -156,6 +158,8 @@ class RecipeSelectionPage extends StatelessWidget {
               child: Text(
                 '${group.name}のレシピ',
                 style: const TextStyle(fontSize: 26, fontWeight: FontWeight.bold, color: Colors.black87),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
               ),
             ),
             const SizedBox(height: 16),
@@ -170,10 +174,20 @@ class RecipeSelectionPage extends StatelessWidget {
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                     child: ListTile(
                       contentPadding: const EdgeInsets.all(16),
-                      title: Text(recipe.title, style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
+                      title: Text(
+                        recipe.title,
+                        style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
                       subtitle: Padding(
                         padding: const EdgeInsets.only(top: 8),
-                        child: Text(recipe.description, style: TextStyle(fontSize: 16, color: Colors.grey.shade700)),
+                        child: Text(
+                          recipe.description,
+                          style: TextStyle(fontSize: 16, color: Colors.grey.shade700),
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                        ),
                       ),
                       trailing: const Icon(Icons.chevron_right),
                       onTap: () {

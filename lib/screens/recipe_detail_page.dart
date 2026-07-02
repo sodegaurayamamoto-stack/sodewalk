@@ -14,6 +14,9 @@ class RecipeDetailPage extends StatefulWidget {
 class _RecipeDetailPageState extends State<RecipeDetailPage> {
   late int _servings;
 
+  static const int _minServings = 1;
+  static const int _maxServings = 20;
+
   @override
   void initState() {
     super.initState();
@@ -75,7 +78,7 @@ class _RecipeDetailPageState extends State<RecipeDetailPage> {
   void _changeServings(int delta) {
     setState(() {
       final next = _servings + delta;
-      if (next >= 1 && next <= 20) {
+      if (next >= _minServings && next <= _maxServings) {
         _servings = next;
       }
     });
@@ -162,6 +165,9 @@ class _RecipeDetailPageState extends State<RecipeDetailPage> {
   }
 
   Widget _buildServingsControl() {
+    final canDecrease = _servings > _minServings;
+    final canIncrease = _servings < _maxServings;
+
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
       decoration: BoxDecoration(
@@ -176,13 +182,21 @@ class _RecipeDetailPageState extends State<RecipeDetailPage> {
           Row(
             children: [
               IconButton(
-                onPressed: () => _changeServings(-1),
-                icon: const Icon(Icons.remove_circle_outline, color: Colors.orange, size: 28),
+                onPressed: canDecrease ? () => _changeServings(-1) : null,
+                icon: Icon(
+                  Icons.remove_circle_outline,
+                  color: canDecrease ? Colors.orange : Colors.grey.shade300,
+                  size: 28,
+                ),
               ),
               Text('$_servings人分', style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
               IconButton(
-                onPressed: () => _changeServings(1),
-                icon: const Icon(Icons.add_circle_outline, color: Colors.orange, size: 28),
+                onPressed: canIncrease ? () => _changeServings(1) : null,
+                icon: Icon(
+                  Icons.add_circle_outline,
+                  color: canIncrease ? Colors.orange : Colors.grey.shade300,
+                  size: 28,
+                ),
               ),
             ],
           ),
@@ -196,9 +210,16 @@ class _RecipeDetailPageState extends State<RecipeDetailPage> {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 6),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(ingredient.name, style: const TextStyle(fontSize: 16)),
+          Expanded(
+            child: Text(
+              ingredient.name,
+              style: const TextStyle(fontSize: 16),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+          const SizedBox(width: 12),
           Text(
             _formatIngredientAmount(scaled, ingredient.unit),
             style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),

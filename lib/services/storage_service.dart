@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:math';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class StorageService {
@@ -62,20 +63,6 @@ class StorageService {
     return monthData[date.day.toString()] ?? 0;
   }
 
-  Future<int> addStepsForDay(DateTime date, int addedSteps) async {
-    final prefs = await SharedPreferences.getInstance();
-    final key = _monthKey(date);
-    final savedJson = prefs.getString(key);
-    Map<String, dynamic> monthData =
-        savedJson != null ? json.decode(savedJson) : {};
-    final dayKey = date.day.toString();
-    final current = monthData[dayKey] ?? 0;
-    final updated = current + addedSteps;
-    monthData[dayKey] = updated;
-    await prefs.setString(key, json.encode(monthData));
-    return updated;
-  }
-
   Future<void> setStepsForDay(DateTime date, int steps) async {
     final prefs = await SharedPreferences.getInstance();
     final key = _monthKey(date);
@@ -85,6 +72,25 @@ class StorageService {
     final dayKey = date.day.toString();
     monthData[dayKey] = steps;
     await prefs.setString(key, json.encode(monthData));
+  }
+
+  // --- ペドメーター用：システム累積歩数の基準値 ---
+
+  static const String _stepBaseKey = 'step_base_';
+
+  String _dayKey(DateTime date) =>
+      '${date.year}-${date.month}-${date.day}';
+
+  Future<void> saveStepBase(int totalSteps) async {
+    final prefs = await SharedPreferences.getInstance();
+    final today = _dayKey(DateTime.now());
+    await prefs.setInt('$_stepBaseKey$today', totalSteps);
+  }
+
+  Future<int?> getStepBase() async {
+    final prefs = await SharedPreferences.getInstance();
+    final today = _dayKey(DateTime.now());
+    return prefs.getInt('$_stepBaseKey$today');
   }
 
   // --- 歩数報酬（ポイント付与）関連 ---
@@ -149,11 +155,68 @@ class StorageService {
     return totalPoints;
   }
 
+  // --- ガウラコイン関連 ---
+
+  static const String _gauraCoinKey = 'gaura_coins';
+  static const String _gauraCoinDateKey = 'gaura_coin_date';
+  static const int maxGauraCoins = 999;
+
+  Future<int> getGauraCoins() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getInt(_gauraCoinKey) ?? 0;
+  }
+
+  Future<int> addGauraCoin() async {
+    final prefs = await SharedPreferences.getInstance();
+    final current = prefs.getInt(_gauraCoinKey) ?? 0;
+    final updated = (current + 1).clamp(0, maxGauraCoins);
+    await prefs.setInt(_gauraCoinKey, updated);
+    return updated;
+  }
+
+  Future<bool> useGauraCoin() async {
+    final prefs = await SharedPreferences.getInstance();
+    final current = prefs.getInt(_gauraCoinKey) ?? 0;
+    if (current <= 0) return false;
+    await prefs.setInt(_gauraCoinKey, current - 1);
+    return true;
+  }
+
+  Future<bool> hasGauraCoinToday() async {
+    final prefs = await SharedPreferences.getInstance();
+    final savedDate = prefs.getString(_gauraCoinDateKey);
+    if (savedDate == null) return false;
+    final today = DateTime.now();
+    final todayStr = '${today.year}-${today.month}-${today.day}';
+    return savedDate == todayStr;
+  }
+
+  Future<int?> tryGiveGauraCoin() async {
+    final already = await hasGauraCoinToday();
+    if (already) return null;
+    final prefs = await SharedPreferences.getInstance();
+    final today = DateTime.now();
+    final todayStr = '${today.year}-${today.month}-${today.day}';
+    await prefs.setString(_gauraCoinDateKey, todayStr);
+    return await addGauraCoin();
+  }
+
+  // --- ガウラガチャ関連 ---
+
+  Future<String?> drawGauraGacha(List<String> allIds) async {
+    final collected = await getCollectedGaura();
+    final uncollected = allIds.where((id) => !collected.contains(id)).toList();
+    if (uncollected.isEmpty) return null;
+    final random = Random();
+    final drawn = uncollected[random.nextInt(uncollected.length)];
+    await addGaura(drawn);
+    return drawn;
+  }
+
   // --- ガウラくん探索ポイント（1日1回）関連 ---
 
   static const String _gauraPointDateKey = 'gaura_point_date';
 
-  /// 今日すでにガウラ探索ポイントを取得済みか
   Future<bool> hasGauraPointToday() async {
     final prefs = await SharedPreferences.getInstance();
     final savedDate = prefs.getString(_gauraPointDateKey);
@@ -163,7 +226,6 @@ class StorageService {
     return savedDate == todayStr;
   }
 
-  /// ガウラ探索ポイントを付与（1日1回のみ+5pt）
   Future<int?> tryGiveGauraPoint() async {
     final already = await hasGauraPointToday();
     if (already) return null;
@@ -190,9 +252,9 @@ class StorageService {
     if (!list.contains(locationId)) {
       list.add(locationId);
       await prefs.setStringList(_gauraKey, list);
-      return true; // 新規ゲット
+      return true;
     }
-    return false; // すでに取得済み
+    return false;
   }
 
   Future<bool> hasGaura(String locationId) async {

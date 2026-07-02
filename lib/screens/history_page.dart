@@ -34,7 +34,17 @@ class _HistoryPageState extends State<HistoryPage> {
     });
   }
 
+  // 今表示している月が、現在の年月と同じかどうか（これより先には進めない）
+  bool get _isCurrentMonth {
+    final now = DateTime.now();
+    return _displayYear == now.year && _displayMonth == now.month;
+  }
+
   void _changeMonth(int direction) {
+    if (direction > 0 && _isCurrentMonth) {
+      // 今月より先（未来）には進めない
+      return;
+    }
     setState(() {
       _displayMonth += direction;
       if (_displayMonth > 12) {
@@ -117,13 +127,23 @@ class _HistoryPageState extends State<HistoryPage> {
                     style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Colors.black),
                   ),
                   OutlinedButton(
-                    onPressed: () => _changeMonth(1),
+                    onPressed: _isCurrentMonth ? null : () => _changeMonth(1),
                     style: OutlinedButton.styleFrom(
-                      side: const BorderSide(color: Colors.blueGrey, width: 3.0),
+                      side: BorderSide(
+                        color: _isCurrentMonth ? Colors.grey.shade300 : Colors.blueGrey,
+                        width: 3.0,
+                      ),
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
                     ),
-                    child: const Text('次月 ＞', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.black87)),
+                    child: Text(
+                      '次月 ＞',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: _isCurrentMonth ? Colors.grey.shade400 : Colors.black87,
+                      ),
+                    ),
                   ),
                 ],
               ),
@@ -162,19 +182,19 @@ class _HistoryPageState extends State<HistoryPage> {
 
                           int day = index - startOffset + 1;
                           int steps = _monthlyStepsData[day.toString()] ?? 0;
-                          bool isAchieved = steps >= 5001;
+                          bool isAchieved = steps >= 5000;
 
                           return Container(
                             padding: const EdgeInsets.symmetric(horizontal: 3.0, vertical: 4.0),
                             decoration: BoxDecoration(
-                              color: steps >= 8001
+                              color: steps >= 8000
                                   ? Colors.green.shade50
-                                  : (steps >= 5001 ? Colors.orange.shade50 : Colors.grey.shade50),
+                                  : (steps >= 5000 ? Colors.orange.shade50 : Colors.grey.shade50),
                               borderRadius: BorderRadius.circular(8),
                               border: Border.all(
-                                color: steps >= 8001
+                                color: steps >= 8000
                                     ? Colors.green.shade600
-                                    : (steps >= 5001 ? Colors.orange.shade600 : Colors.grey.shade300),
+                                    : (steps >= 5000 ? Colors.orange.shade600 : Colors.grey.shade300),
                                 width: isAchieved ? 2.0 : 1.0,
                               ),
                             ),
@@ -191,9 +211,9 @@ class _HistoryPageState extends State<HistoryPage> {
                                       style: TextStyle(
                                         fontSize: dayFontSize,
                                         fontWeight: FontWeight.w900,
-                                        color: steps >= 8001
+                                        color: steps >= 8000
                                             ? Colors.green.shade900
-                                            : (steps >= 5001 ? Colors.orange.shade900 : Colors.black87),
+                                            : (steps >= 5000 ? Colors.orange.shade900 : Colors.black87),
                                         height: 0.9,
                                       ),
                                     ),
@@ -201,11 +221,11 @@ class _HistoryPageState extends State<HistoryPage> {
                                       Container(
                                         padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 1),
                                         decoration: BoxDecoration(
-                                          color: steps >= 8001 ? Colors.green.shade600 : Colors.orange.shade600,
+                                          color: steps >= 8000 ? Colors.green.shade600 : Colors.orange.shade600,
                                           borderRadius: BorderRadius.circular(6),
                                         ),
                                         child: Text(
-                                          steps >= 8001 ? '◎' : '〇',
+                                          steps >= 8000 ? '◎' : '〇',
                                           style: TextStyle(fontSize: achievedBadgeFontSize, fontWeight: FontWeight.bold, color: Colors.white),
                                         ),
                                       ),
@@ -224,9 +244,9 @@ class _HistoryPageState extends State<HistoryPage> {
                                           style: TextStyle(
                                             fontSize: stepsFontSize,
                                             fontWeight: FontWeight.w900,
-                                            color: steps >= 8001
+                                            color: steps >= 8000
                                                 ? Colors.green.shade800
-                                                : (steps >= 5001 ? Colors.orange.shade800 : Colors.grey.shade800),
+                                                : (steps >= 5000 ? Colors.orange.shade800 : Colors.grey.shade800),
                                             letterSpacing: -0.5,
                                           ),
                                         ),
@@ -252,6 +272,24 @@ class _HistoryPageState extends State<HistoryPage> {
                           width: 18,
                           height: 18,
                           decoration: BoxDecoration(
+                            color: Colors.grey.shade50,
+                            border: Border.all(color: Colors.grey.shade300, width: 2),
+                            borderRadius: BorderRadius.circular(5),
+                          ),
+                        ),
+                        const SizedBox(width: 10),
+                        const Expanded(
+                          child: Text('0〜4999歩：達成なし', style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold)),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 6),
+                    Row(
+                      children: [
+                        Container(
+                          width: 18,
+                          height: 18,
+                          decoration: BoxDecoration(
                             color: Colors.orange.shade50,
                             border: Border.all(color: Colors.orange.shade600, width: 2),
                             borderRadius: BorderRadius.circular(5),
@@ -259,7 +297,7 @@ class _HistoryPageState extends State<HistoryPage> {
                         ),
                         const SizedBox(width: 10),
                         const Expanded(
-                          child: Text('5001〜8000歩：〇（5ポイント獲得）', style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold)),
+                          child: Text('5000〜7999歩：〇（5ポイント獲得）', style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold)),
                         ),
                       ],
                     ),
@@ -277,7 +315,7 @@ class _HistoryPageState extends State<HistoryPage> {
                         ),
                         const SizedBox(width: 10),
                         const Expanded(
-                          child: Text('8001歩以上：◎（10ポイント獲得）', style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold)),
+                          child: Text('8000歩以上：◎（10ポイント獲得）', style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold)),
                         ),
                       ],
                     ),
