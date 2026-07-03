@@ -81,11 +81,10 @@ class _GauraGachaPageState extends State<GauraGachaPage> {
   }
 
   String _getImagePath(Map<String, dynamic> item) {
+    final image = item['image'] as String? ?? '';
+    if (image.isNotEmpty) return 'assets/gaura/$image';
     final id = item['id'] as String;
-    final character = item['character'] as String? ?? 'キャラ名';
-    final action = item['action'] as String? ?? 'アクション';
-    final color = item['color'] as String? ?? '普通';
-    return 'assets/gaura/${id}_${character}_${action}_${color}.png';
+    return 'assets/gaura/$id.png';
   }
 
   void _showResultDialog(Map<String, dynamic> item) {
