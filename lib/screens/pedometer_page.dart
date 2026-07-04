@@ -235,8 +235,8 @@ class _PedometerPageState extends State<PedometerPage>
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text(alreadyToday ? '✨' : '🎉', style: const TextStyle(fontSize: 48)),
-            const SizedBox(height: 8),
+            Text(alreadyToday ? '✨' : '🎉', style: const TextStyle(fontSize: 24)),
+            const SizedBox(height: 4),
             Text(
               alreadyToday ? '今日はもう出会ったよ！' : 'ガウラくんに出会った！',
               style: TextStyle(
@@ -247,10 +247,10 @@ class _PedometerPageState extends State<PedometerPage>
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 12),
-            Image.asset('assets/gaura_normal.png', width: 100, height: 100),
+            Image.asset('assets/gaura_normal.png', width: 140, height: 140),
             const SizedBox(height: 8),
             Text(
-              spot.name,
+              'スポット名：${spot.name}',
               style: TextStyle(fontSize: 14, color: Colors.grey.shade600),
               textAlign: TextAlign.center,
             ),
@@ -259,7 +259,12 @@ class _PedometerPageState extends State<PedometerPage>
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Image.asset('assets/gaura_coin.png', width: 28, height: 28),
+                  Image.asset(
+                    'assets/gaura_coin.png',
+                    width: 28,
+                    height: 28,
+                    color: null,
+                  ),
                   const SizedBox(width: 6),
                   const Text('+1', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.amber)),
                   const SizedBox(width: 16),
@@ -347,7 +352,6 @@ class _PedometerPageState extends State<PedometerPage>
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    // ガウラコイン表示
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [

@@ -263,6 +263,54 @@
       "character": "ガウラ",
       "action": "とうもろこし",
       "image": "0044_gaura_corn.png"
+    },
+    {
+      "id": "0045",
+      "character": "ガウラ",
+      "action": "里芋",
+      "image": "0045_gaura_taro.png"
+    },
+    {
+      "id": "0046",
+      "character": "ガウラ",
+      "action": "山芋",
+      "image": "0046_gaura_yamaimo.png"
+    },
+    {
+      "id": "0047",
+      "character": "ガウラ",
+      "action": "カブ",
+      "image": "0047_gaura_turnip.png"
+    },
+    {
+      "id": "0048",
+      "character": "ガウラ",
+      "action": "ごぼう",
+      "image": "0048_gaura_burdock.png"
+    },
+    {
+      "id": "0049",
+      "character": "ガウラ",
+      "action": "れんこん",
+      "image": "0049_gaura_lotus.png"
+    },
+    {
+      "id": "0050",
+      "character": "ガウラ",
+      "action": "白菜",
+      "image": "0050_gaura_hakusai.png"
+    },
+    {
+      "id": "0051",
+      "character": "ガウラ",
+      "action": "小松菜",
+      "image": "0051_gaura_komatsuna.png"
+    },
+    {
+      "id": "0052",
+      "character": "ガウラ",
+      "action": "ほうれん草",
+      "image": "0052_gaura_spinach.png"
     }
   ]
 }
