@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:confetti/confetti.dart';
 import 'dart:convert';
 import '../services/storage_service.dart';
 
@@ -12,6 +13,7 @@ class GauraGachaPage extends StatefulWidget {
 
 class _GauraGachaPageState extends State<GauraGachaPage> {
   final StorageService _storage = StorageService();
+  late ConfettiController _confettiController;
   int _coins = 0;
   List<Map<String, dynamic>> _gauraList = [];
   bool _isLoading = true;
@@ -20,7 +22,14 @@ class _GauraGachaPageState extends State<GauraGachaPage> {
   @override
   void initState() {
     super.initState();
+    _confettiController = ConfettiController(duration: const Duration(seconds: 3));
     _loadData();
+  }
+
+  @override
+  void dispose() {
+    _confettiController.dispose();
+    super.dispose();
   }
 
   Future<void> _loadData() async {
@@ -93,51 +102,74 @@ class _GauraGachaPageState extends State<GauraGachaPage> {
     final action = item['action'] as String? ?? '';
     final imagePath = _getImagePath(item);
 
+    _confettiController.play();
+
     showDialog(
       context: context,
       barrierDismissible: false,
-      builder: (context) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        contentPadding: const EdgeInsets.all(24),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const Text('🎉', style: TextStyle(fontSize: 48)),
-            const SizedBox(height: 8),
-            const Text(
-              'ガウラくんゲット！',
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.orange),
+      builder: (context) => Stack(
+        children: [
+          AlertDialog(
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+            contentPadding: const EdgeInsets.all(24),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Text('🎉', style: TextStyle(fontSize: 48)),
+                const SizedBox(height: 8),
+                const Text(
+                  'ガウラくんゲット！',
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.orange),
+                ),
+                const SizedBox(height: 16),
+                Container(
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: Colors.orange.shade50,
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(color: Colors.orange.shade200),
+                  ),
+                  child: Column(
+                    children: [
+                      Image.asset(imagePath, width: 100, height: 100),
+                      const SizedBox(height: 8),
+                      Text('No.$id', style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                      if (action.isNotEmpty)
+                        Text('$character（$action）', style: TextStyle(fontSize: 14, color: Colors.grey.shade600)),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 20),
+                ElevatedButton(
+                  onPressed: () => Navigator.pop(context),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.orange,
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  ),
+                  child: const Text('閉じる', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                ),
+              ],
             ),
-            const SizedBox(height: 16),
-            Container(
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: Colors.orange.shade50,
-                borderRadius: BorderRadius.circular(16),
-                border: Border.all(color: Colors.orange.shade200),
-              ),
-              child: Column(
-                children: [
-                  Image.asset(imagePath, width: 100, height: 100),
-                  const SizedBox(height: 8),
-                  Text('No.$id', style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-                  if (action.isNotEmpty)
-                    Text('$character（$action）', style: TextStyle(fontSize: 14, color: Colors.grey.shade600)),
-                ],
-              ),
+          ),
+          Align(
+            alignment: Alignment.topCenter,
+            child: ConfettiWidget(
+              confettiController: _confettiController,
+              blastDirectionality: BlastDirectionality.explosive,
+              numberOfParticles: 20,
+              gravity: 0.1,
+              emissionFrequency: 0.05,
+              colors: const [
+                Colors.orange,
+                Colors.yellow,
+                Colors.green,
+                Colors.blue,
+                Colors.pink,
+              ],
             ),
-            const SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: () => Navigator.pop(context),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.orange,
-                foregroundColor: Colors.white,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-              ),
-              child: const Text('閉じる', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

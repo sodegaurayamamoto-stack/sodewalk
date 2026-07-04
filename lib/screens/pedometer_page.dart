@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:pedometer/pedometer.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:confetti/confetti.dart';
 import 'dart:convert';
 import 'package:flutter/services.dart';
 import '../models/location.dart';
@@ -21,6 +22,7 @@ class PedometerPage extends StatefulWidget {
 class _PedometerPageState extends State<PedometerPage>
     with WidgetsBindingObserver {
   final StorageService _storage = StorageService();
+  late ConfettiController _confettiController;
 
   int _steps = 0;
   int _gauraCoins = 0;
@@ -33,6 +35,7 @@ class _PedometerPageState extends State<PedometerPage>
   @override
   void initState() {
     super.initState();
+    _confettiController = ConfettiController(duration: const Duration(seconds: 3));
     WidgetsBinding.instance.addObserver(this);
     _initPedometer();
     _loadCoins();
@@ -48,6 +51,7 @@ class _PedometerPageState extends State<PedometerPage>
 
   @override
   void dispose() {
+    _confettiController.dispose();
     WidgetsBinding.instance.removeObserver(this);
     super.dispose();
   }
@@ -227,66 +231,96 @@ class _PedometerPageState extends State<PedometerPage>
 
   void _showGauraFound(WalkLocation spot, int? coinResult, int? pointResult) {
     final alreadyToday = coinResult == null && pointResult == null;
+
+    if (!alreadyToday) {
+      _confettiController.play();
+    }
+
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        contentPadding: const EdgeInsets.all(24),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(alreadyToday ? '✨' : '🎉', style: const TextStyle(fontSize: 24)),
-            const SizedBox(height: 4),
-            Text(
-              alreadyToday ? '今日はもう出会ったよ！' : 'ガウラくんに出会った！',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                color: alreadyToday ? Colors.blue : Colors.orange,
-              ),
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 12),
-            Image.asset('assets/gaura_normal.png', width: 140, height: 140),
-            const SizedBox(height: 8),
-            Text(
-              'スポット名：${spot.name}',
-              style: TextStyle(fontSize: 14, color: Colors.grey.shade600),
-              textAlign: TextAlign.center,
-            ),
-            if (!alreadyToday) ...[
-              const SizedBox(height: 12),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Image.asset(
-                    'assets/gaura_coin.png',
-                    width: 28,
-                    height: 28,
-                    color: null,
+      builder: (context) => Stack(
+        children: [
+          AlertDialog(
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+            contentPadding: const EdgeInsets.all(24),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(alreadyToday ? '✨' : '🎉', style: const TextStyle(fontSize: 24)),
+                const SizedBox(height: 4),
+                Text(
+                  alreadyToday ? '今日はもう出会ったよ！' : 'ガウラくんに出会った！',
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: alreadyToday ? Colors.blue : Colors.orange,
                   ),
-                  const SizedBox(width: 6),
-                  const Text('+1', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.amber)),
-                  const SizedBox(width: 16),
-                  const Text('+5pt', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.green)),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 12),
+                Image.asset('assets/gaura_normal.png', width: 140, height: 140),
+                const SizedBox(height: 8),
+                Text(
+                  'スポット名：${spot.name}',
+                  style: TextStyle(fontSize: 14, color: Colors.grey.shade600),
+                  textAlign: TextAlign.center,
+                ),
+                if (!alreadyToday) ...[
+                  const SizedBox(height: 12),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Image.asset('assets/gaura_coin.png', width: 28, height: 28),
+                      const SizedBox(width: 6),
+                      const Text('+1', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.amber)),
+                      const SizedBox(width: 16),
+                      const Text('+5pt', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.green)),
+                    ],
+                  ),
                 ],
-              ),
-            ],
-            const SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.pop(context);
-                _loadCoins();
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.orange,
-                foregroundColor: Colors.white,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-              ),
-              child: const Text('閉じる', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                const SizedBox(height: 20),
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                    _loadCoins();
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.orange,
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  ),
+                  child: const Text('閉じる', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                ),
+              ],
             ),
-          ],
-        ),
+          ),
+          Align(
+            alignment: Alignment.topCenter,
+            child: ConfettiWidget(
+              confettiController: _confettiController,
+              blastDirectionality: BlastDirectionality.explosive,
+              numberOfParticles: 20,
+              gravity: 0.1,
+              emissionFrequency: 0.05,
+              colors: const [
+                Colors.orange,
+                Colors.yellow,
+                Colors.green,
+                Colors.blue,
+                Colors.pink,
+              ],
+              createParticlePath: (size) {
+                final path = Path();
+                path.addRect(Rect.fromCenter(
+                  center: Offset.zero,
+                  width: size.width,
+                  height: size.height,
+                ));
+                return path;
+              },
+            ),
+          ),
+        ],
       ),
     );
   }
