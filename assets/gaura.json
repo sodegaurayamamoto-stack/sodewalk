@@ -311,6 +311,42 @@
       "character": "ガウラ",
       "action": "ほうれん草",
       "image": "0052_gaura_spinach.png"
+    },
+    {
+      "id": "0053",
+      "character": "ガウラ",
+      "action": "春菊",
+      "image": "0053_gaura_shungiku.png"
+    },
+    {
+      "id": "0054",
+      "character": "ガウラ",
+      "action": "にら",
+      "image": "0054_gaura_nira.png"
+    },
+    {
+      "id": "0055",
+      "character": "ガウラ",
+      "action": "カリフラワー",
+      "image": "0055_gaura_cauliflower.png"
+    },
+    {
+      "id": "0056",
+      "character": "ガウラ",
+      "action": "ブロッコリー",
+      "image": "0056_gaura_broccoli.png"
+    },
+    {
+      "id": "0057",
+      "character": "ガウラ",
+      "action": "チンゲンサイ",
+      "image": "0057_gaura_chingensai.png"
+    },
+    {
+      "id": "0058",
+      "character": "ガウラ",
+      "action": "きゅうり",
+      "image": "0058_gaura_cucumber.png"
     }
   ]
 }

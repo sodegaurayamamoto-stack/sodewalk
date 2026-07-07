@@ -4,7 +4,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class StorageService {
   static const String _pointsKey = 'user_points';
-  static const String _phoneLinkedKey = 'is_phone_linked';
   static const int defaultPoints = 0;
 
   // --- ポイント関連 ---
@@ -31,18 +30,6 @@ class StorageService {
     final updated = current - delta;
     await setPoints(updated);
     return updated;
-  }
-
-  // --- 電話番号連携関連 ---
-
-  Future<bool> isPhoneLinked() async {
-    final prefs = await SharedPreferences.getInstance();
-    return prefs.getBool(_phoneLinkedKey) ?? false;
-  }
-
-  Future<void> setPhoneLinked(bool linked) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setBool(_phoneLinkedKey, linked);
   }
 
   // --- 歩数関連 ---
@@ -74,12 +61,38 @@ class StorageService {
     await prefs.setString(key, json.encode(monthData));
   }
 
-  // --- ペドメーター用：システム累積歩数の基準値 ---
+  // --- 夜間歩数記録（21時通知タップ時） ---
 
-  static const String _stepBaseKey = 'step_base_';
+  static const String _eveningStepKey = 'evening_step_';
 
   String _dayKey(DateTime date) =>
       '${date.year}-${date.month}-${date.day}';
+
+  Future<void> saveEveningSteps(int totalSteps) async {
+    final prefs = await SharedPreferences.getInstance();
+    final today = _dayKey(DateTime.now());
+    await prefs.setInt('$_eveningStepKey$today', totalSteps);
+  }
+
+  Future<int?> getEveningSteps(DateTime date) async {
+    final prefs = await SharedPreferences.getInstance();
+    final key = _dayKey(date);
+    return prefs.getInt('$_eveningStepKey$key');
+  }
+
+  Future<int> calcYesterdaySteps() async {
+    final now = DateTime.now();
+    final yesterday = now.subtract(const Duration(days: 1));
+    final todayEvening = await getEveningSteps(now);
+    final yesterdayEvening = await getEveningSteps(yesterday);
+    if (todayEvening == null || yesterdayEvening == null) return 0;
+    final diff = todayEvening - yesterdayEvening;
+    return diff < 0 ? 0 : diff;
+  }
+
+  // --- ペドメーター用：システム累積歩数の基準値 ---
+
+  static const String _stepBaseKey = 'step_base_';
 
   Future<void> saveStepBase(int totalSteps) async {
     final prefs = await SharedPreferences.getInstance();
@@ -119,11 +132,17 @@ class StorageService {
     final yesterday = now.subtract(const Duration(days: 1));
     final alreadyRewarded = await isRewardAlreadyGiven(yesterday);
     if (alreadyRewarded) return null;
-    final steps = await getStepsForDay(yesterday);
+
+    final steps = await calcYesterdaySteps();
+    if (steps <= 0) return null;
+
     final earnedPoints = calculateEarnedPoints(steps);
     if (earnedPoints <= 0) return null;
+
     final totalPoints = await addPoints(earnedPoints);
     await markRewardGiven(yesterday);
+    await setStepsForDay(yesterday, steps);
+
     return RewardResult(
       steps: steps,
       earnedPoints: earnedPoints,
