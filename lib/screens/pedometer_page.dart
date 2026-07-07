@@ -29,6 +29,7 @@ class _PedometerPageState extends State<PedometerPage>
   String _statusMessage = '読み込み中...';
   bool _isError = false;
   bool _isSearchingGaura = false;
+  int? _currentTotalSteps;
 
   late Stream<StepCount> _stepCountStream;
 
@@ -39,6 +40,7 @@ class _PedometerPageState extends State<PedometerPage>
     WidgetsBinding.instance.addObserver(this);
     _initPedometer();
     _loadCoins();
+    _processRewardOnOpen();
   }
 
   @override
@@ -54,6 +56,67 @@ class _PedometerPageState extends State<PedometerPage>
     _confettiController.dispose();
     WidgetsBinding.instance.removeObserver(this);
     super.dispose();
+  }
+
+  // アプリを開いた時に昨日の歩数報酬を処理
+  Future<void> _processRewardOnOpen() async {
+    final reward = await _storage.processYesterdayReward();
+    if (reward != null && mounted) {
+      setState(() => _steps = reward.totalPoints);
+      _showRewardDialog(reward);
+    }
+  }
+
+  // 夜間歩数を記録（21時通知タップ時に呼ばれる）
+  Future<void> _saveEveningStepsIfNeeded() async {
+    if (_currentTotalSteps == null) return;
+    final now = DateTime.now();
+    // 20時〜23時の間に開いた場合のみ夜間歩数として記録
+    if (now.hour >= 20 && now.hour <= 23) {
+      await _storage.saveEveningSteps(_currentTotalSteps!);
+    }
+  }
+
+  void _showRewardDialog(RewardResult reward) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        contentPadding: const EdgeInsets.all(28),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Text('🎉', style: TextStyle(fontSize: 48)),
+            const SizedBox(height: 12),
+            const Text(
+              '昨日の歩数ボーナス！',
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.orange),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              '昨日は ${reward.steps} 歩歩きました！',
+              style: TextStyle(fontSize: 16, color: Colors.grey.shade600),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              '+${reward.earnedPoints} pt ゲット！',
+              style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Colors.orange),
+            ),
+            const SizedBox(height: 24),
+            ElevatedButton(
+              onPressed: () => Navigator.pop(context),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.orange,
+                foregroundColor: Colors.white,
+                padding: const EdgeInsets.symmetric(vertical: 14),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+              ),
+              child: const Text('閉じる', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 
   Future<void> _loadCoins() async {
@@ -105,6 +168,8 @@ class _PedometerPageState extends State<PedometerPage>
 
   Future<void> _onStepCount(StepCount event) async {
     final totalSteps = event.steps;
+    _currentTotalSteps = totalSteps;
+
     int? base = await _storage.getStepBase();
     if (base == null) {
       await _storage.saveStepBase(totalSteps);
@@ -112,6 +177,10 @@ class _PedometerPageState extends State<PedometerPage>
     }
     final todaySteps = (totalSteps - base).clamp(0, 999999);
     await _storage.setStepsForDay(DateTime.now(), todaySteps);
+
+    // 20〜23時の間なら夜間歩数を自動保存
+    await _saveEveningStepsIfNeeded();
+
     if (mounted) {
       setState(() {
         _steps = todaySteps;
