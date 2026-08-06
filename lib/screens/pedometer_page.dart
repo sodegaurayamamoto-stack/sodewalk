@@ -29,7 +29,13 @@ class _PedometerPageState extends State<PedometerPage>
   String _statusMessage = '読み込み中...';
   bool _isError = false;
   bool _isSearchingGaura = false;
-  int? _currentTotalSteps;
+
+  // システム累積歩数
+  int? _systemStepsAtOpen;   // アプリを開いた時点の累積歩数
+  int _savedStepsBeforeOpen; // タスクを切る前に保存した歩数
+  int _currentSystemSteps = 0; // 現在のシステム累積歩数
+
+  _PedometerPageState() : _savedStepsBeforeOpen = 0;
 
   late Stream<StepCount> _stepCountStream;
 
@@ -38,16 +44,21 @@ class _PedometerPageState extends State<PedometerPage>
     super.initState();
     _confettiController = ConfettiController(duration: const Duration(seconds: 3));
     WidgetsBinding.instance.addObserver(this);
-    _initPedometer();
     _loadCoins();
     _processRewardOnOpen();
+    _initPedometer();
   }
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.paused) {
+      // タスクを切った時に歩数を保存
+      _saveCurrentSteps();
+    }
     if (state == AppLifecycleState.resumed) {
-      _loadSavedSteps();
+      // 再度開いた時
       _loadCoins();
+      _resetBaseOnResume();
     }
   }
 
@@ -58,22 +69,24 @@ class _PedometerPageState extends State<PedometerPage>
     super.dispose();
   }
 
-  // アプリを開いた時に昨日の歩数報酬を処理
+  // タスクを切った時に現在の歩数を保存
+  Future<void> _saveCurrentSteps() async {
+    await _storage.setStepsForDay(DateTime.now(), _steps);
+  }
+
+  // 再起動時に基準値をリセット
+  Future<void> _resetBaseOnResume() async {
+    _systemStepsAtOpen = _currentSystemSteps;
+    final saved = await _storage.getStepsForDay(DateTime.now());
+    setState(() {
+      _savedStepsBeforeOpen = saved;
+    });
+  }
+
   Future<void> _processRewardOnOpen() async {
     final reward = await _storage.processYesterdayReward();
     if (reward != null && mounted) {
-      setState(() => _steps = reward.totalPoints);
       _showRewardDialog(reward);
-    }
-  }
-
-  // 夜間歩数を記録（21時通知タップ時に呼ばれる）
-  Future<void> _saveEveningStepsIfNeeded() async {
-    if (_currentTotalSteps == null) return;
-    final now = DateTime.now();
-    // 20時〜23時の間に開いた場合のみ夜間歩数として記録
-    if (now.hour >= 20 && now.hour <= 23) {
-      await _storage.saveEveningSteps(_currentTotalSteps!);
     }
   }
 
@@ -124,13 +137,10 @@ class _PedometerPageState extends State<PedometerPage>
     if (mounted) setState(() => _gauraCoins = coins);
   }
 
-  Future<void> _loadSavedSteps() async {
-    final saved = await _storage.getStepsForDay(DateTime.now());
-    if (mounted) setState(() => _steps = saved);
-  }
-
   Future<void> _initPedometer() async {
+    // 保存済みの歩数を先に表示
     final saved = await _storage.getStepsForDay(DateTime.now());
+    _savedStepsBeforeOpen = saved;
     if (mounted) setState(() => _steps = saved);
 
     final status = await Permission.activityRecognition.request();
@@ -167,19 +177,17 @@ class _PedometerPageState extends State<PedometerPage>
   }
 
   Future<void> _onStepCount(StepCount event) async {
-    final totalSteps = event.steps;
-    _currentTotalSteps = totalSteps;
+    final systemSteps = event.steps;
+    _currentSystemSteps = systemSteps;
 
-    int? base = await _storage.getStepBase();
-    if (base == null) {
-      await _storage.saveStepBase(totalSteps);
-      base = totalSteps;
+    // 初回取得時に基準値を設定
+    if (_systemStepsAtOpen == null) {
+      _systemStepsAtOpen = systemSteps;
     }
-    final todaySteps = (totalSteps - base).clamp(0, 999999);
-    await _storage.setStepsForDay(DateTime.now(), todaySteps);
 
-    // 20〜23時の間なら夜間歩数を自動保存
-    await _saveEveningStepsIfNeeded();
+    // 今日の歩数 = 保存済み歩数 + 今回開いてからの差分
+    final diffSinceOpen = systemSteps - _systemStepsAtOpen!;
+    final todaySteps = (_savedStepsBeforeOpen + diffSinceOpen).clamp(0, 999999);
 
     if (mounted) {
       setState(() {
