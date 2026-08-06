@@ -347,6 +347,348 @@
       "character": "ガウラ",
       "action": "きゅうり",
       "image": "0058_gaura_cucumber.png"
+    },
+    {
+      "id": "0059",
+      "character": "ガウラ",
+      "action": "かぼちゃ",
+      "image": "0059_gaura_pumpkin.png"
+    },
+    {
+      "id": "0060",
+      "character": "ガウラ",
+      "action": "なす",
+      "image": "0060_gaura_eggplant.png"
+    },
+    {
+      "id": "0061",
+      "character": "ガウラ",
+      "action": "トマト",
+      "image": "0061_gaura_tomato.png"
+    },
+    {
+      "id": "0062",
+      "character": "ガウラ",
+      "action": "ピーマン",
+      "image": "0062_gaura_pepper.png"
+    },
+    {
+      "id": "0063",
+      "character": "ガウラ",
+      "action": "枝豆",
+      "image": "0063_gaura_edamame.png"
+    },
+    {
+      "id": "0064",
+      "character": "ガウラ",
+      "action": "葉生姜",
+      "image": "0064_gaura_haginger.png"
+    },
+    {
+      "id": "0065",
+      "character": "ガウラ",
+      "action": "メロン",
+      "image": "0065_gaura_melon.png"
+    },
+    {
+      "id": "0066",
+      "character": "ガウラ",
+      "action": "スイカ",
+      "image": "0066_gaura_watermelon.png"
+    },
+    {
+      "id": "0067",
+      "character": "ガウラ",
+      "action": "インゲン",
+      "image": "0067_gaura_ingen.png"
+    },
+    {
+      "id": "0068",
+      "character": "ガウラ",
+      "action": "そら豆",
+      "image": "0068_gaura_sorabean.png"
+    },
+    {
+      "id": "0069",
+      "character": "ガウラ",
+      "action": "梅",
+      "image": "0069_gaura_ume.png"
+    },
+    {
+      "id": "0070",
+      "character": "ガウラ",
+      "action": "みかん",
+      "image": "0070_gaura_mikan.png"
+    },
+    {
+      "id": "0071",
+      "character": "ガウラ",
+      "action": "なし",
+      "image": "0071_gaura_pear.png"
+    },
+    {
+      "id": "0072",
+      "character": "ガウラ",
+      "action": "くり",
+      "image": "0072_gaura_chestnut.png"
+    },
+    {
+      "id": "0073",
+      "character": "ガウラ",
+      "action": "紫蘇",
+      "image": "0073_gaura_shiso.png"
+    },
+    {
+      "id": "0074",
+      "character": "ガウラ",
+      "action": "シシトウ",
+      "image": "0074_gaura_shishito.png"
+    },
+    {
+      "id": "0075",
+      "character": "ガウラ",
+      "action": "うり",
+      "image": "0075_gaura_uri.png"
+    },
+    {
+      "id": "0076",
+      "character": "ガウラ",
+      "action": "ゴーヤ",
+      "image": "0076_gaura_goya.png"
+    },
+    {
+      "id": "0077",
+      "character": "ガウラ",
+      "action": "ミョウガ",
+      "image": "0077_gaura_myoga.png"
+    },
+    {
+      "id": "0078",
+      "character": "ガウラ",
+      "action": "ロマネスコ",
+      "image": "0078_gaura_romanesco.png"
+    },
+    {
+      "id": "0079",
+      "character": "ガウラ",
+      "action": "水菜",
+      "image": "0079_gaura_mizuna.png"
+    },
+    {
+      "id": "0080",
+      "character": "ガウラ",
+      "action": "ゆず",
+      "image": "0080_gaura_yuzu.png"
+    },
+    {
+      "id": "0081",
+      "character": "ガウラ",
+      "action": "冬瓜",
+      "image": "0081_gaura_togan.png"
+    },
+    {
+      "id": "0082",
+      "character": "ガウラ",
+      "action": "柿",
+      "image": "0082_gaura_kaki.png"
+    },
+    {
+      "id": "0083",
+      "character": "ガウラ",
+      "action": "ビール",
+      "image": "0083_gaura_beer.png"
+    },
+    {
+      "id": "0084",
+      "character": "ガウラ",
+      "action": "ソーセージ",
+      "image": "0084_gaura_sausage.png"
+    },
+    {
+      "id": "0085",
+      "character": "ガウラ",
+      "action": "ぐるぐるソーセージ",
+      "image": "0085_gaura_guruguru_sausage.png"
+    },
+    {
+      "id": "0086",
+      "character": "ガウラ",
+      "action": "バウムクーヘン",
+      "image": "0086_gaura_baumkuchen.png"
+    },
+    {
+      "id": "0087",
+      "character": "ガウラ",
+      "action": "バーベキュー",
+      "image": "0087_gaura_bbq.png"
+    },
+    {
+      "id": "0088",
+      "character": "ガウラ",
+      "action": "プリン",
+      "image": "0088_gaura_pudding.png"
+    },
+    {
+      "id": "0089",
+      "character": "ガウラ",
+      "action": "シュークリーム",
+      "image": "0089_gaura_creamchoux.png"
+    },
+    {
+      "id": "0090",
+      "character": "ガウラ",
+      "action": "ケーキ",
+      "image": "0090_gaura_cake.png"
+    },
+    {
+      "id": "0091",
+      "character": "ガウラ",
+      "action": "竹岡式ラーメン",
+      "image": "0091_gaura_takeoka_ramen.png"
+    },
+    {
+      "id": "0092",
+      "character": "ガウラ",
+      "action": "ガウラーメン",
+      "image": "0092_gaura_gaura_ramen.png"
+    },
+    {
+      "id": "0093",
+      "character": "ガウラ",
+      "action": "海苔",
+      "image": "0093_gaura_nori.png"
+    },
+    {
+      "id": "0094",
+      "character": "ガウラ",
+      "action": "あさり",
+      "image": "0094_gaura_asari.png"
+    },
+    {
+      "id": "0095",
+      "character": "ガウラ",
+      "action": "焼きハマグリ",
+      "image": "0095_gaura_hamaguri.png"
+    },
+    {
+      "id": "0096",
+      "character": "ガウラ",
+      "action": "ソフトクリーム",
+      "image": "0096_gaura_softcream.png"
+    },
+    {
+      "id": "0097",
+      "character": "ガウラ",
+      "action": "落花生ソフトクリーム",
+      "image": "0097_gaura_peanut_softcream.png"
+    },
+    {
+      "id": "0098",
+      "character": "ガウラ",
+      "action": "おにぎり",
+      "image": "0098_gaura_onigiri.png"
+    },
+    {
+      "id": "0099",
+      "character": "ガウラ",
+      "action": "煎餅",
+      "image": "0099_gaura_senbei.png"
+    },
+    {
+      "id": "0100",
+      "character": "ガウラ",
+      "action": "みたらし団子",
+      "image": "0100_gaura_mitarashi.png"
+    },
+    {
+      "id": "0101",
+      "character": "ガウラ",
+      "action": "大福",
+      "image": "0101_gaura_daifuku.png"
+    },
+    {
+      "id": "0102",
+      "character": "ガウラ",
+      "action": "まぐろ寿司",
+      "image": "0102_gaura_tuna_sushi.png"
+    },
+    {
+      "id": "0103",
+      "character": "ガウラ",
+      "action": "カレー",
+      "image": "0103_gaura_curry.png"
+    },
+    {
+      "id": "0104",
+      "character": "ガウラ",
+      "action": "牛丼",
+      "image": "0104_gaura_gyudon.png"
+    },
+    {
+      "id": "0105",
+      "character": "ガウラ",
+      "action": "カツ丼",
+      "image": "0105_gaura_katsudon.png"
+    },
+    {
+      "id": "0106",
+      "character": "ガウラ",
+      "action": "えび天ぷら",
+      "image": "0106_gaura_ebi_tempura.png"
+    },
+    {
+      "id": "0107",
+      "character": "ガウラ",
+      "action": "ドーナツ",
+      "image": "0107_gaura_donut.png"
+    },
+    {
+      "id": "0108",
+      "character": "ガウラ",
+      "action": "クレープ",
+      "image": "0108_gaura_crepe.png"
+    },
+    {
+      "id": "0109",
+      "character": "ガウラ",
+      "action": "パンケーキ",
+      "image": "0109_gaura_pancake.png"
+    },
+    {
+      "id": "0110",
+      "character": "ガウラ",
+      "action": "食パン",
+      "image": "0110_gaura_shokupan.png"
+    },
+    {
+      "id": "0111",
+      "character": "ガウラ",
+      "action": "フランスパン",
+      "image": "0111_gaura_baguette.png"
+    },
+    {
+      "id": "0112",
+      "character": "ガウラ",
+      "action": "クロワッサン",
+      "image": "0112_gaura_croissant.png"
+    },
+    {
+      "id": "0113",
+      "character": "ガウラ",
+      "action": "メロンパン",
+      "image": "0113_gaura_melonpan.png"
+    },
+    {
+      "id": "0114",
+      "character": "ガウラ",
+      "action": "カレーパン",
+      "image": "0114_gaura_curry_bread.png"
+    },
+    {
+      "id": "0115",
+      "character": "ガウラ",
+      "action": "サンドウィッチ",
+      "image": "0115_gaura_sandwich.png"
     }
   ]
 }
