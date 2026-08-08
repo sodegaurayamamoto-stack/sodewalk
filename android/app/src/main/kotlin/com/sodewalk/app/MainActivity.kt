@@ -1,4 +1,4 @@
-package com.example.sodewalk
+package com.sodewalk.app
 
 import io.flutter.embedding.android.FlutterActivity
 
