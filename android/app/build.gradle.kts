@@ -5,7 +5,7 @@ plugins {
 }
 
 android {
-    namespace = "com.example.sodewalk"
+    namespace = "com.sodewalk.app"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = flutter.ndkVersion
 
@@ -19,8 +19,17 @@ android {
         jvmTarget = JavaVersion.VERSION_17.toString()
     }
 
+    signingConfigs {
+        create("release") {
+            keyAlias = "sodewalk"
+            keyPassword = "bw7ypgam"
+            storeFile = file("/root/sodewalk.jks")
+            storePassword = "bw7ypgam"
+        }
+    }
+
     defaultConfig {
-        applicationId = "com.example.sodewalk"
+        applicationId = "com.sodewalk.app"
         minSdk = flutter.minSdkVersion
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
@@ -29,7 +38,7 @@ android {
 
     buildTypes {
         release {
-            signingConfig = signingConfigs.getByName("debug")
+            signingConfig = signingConfigs.getByName("release")
         }
     }
 }
