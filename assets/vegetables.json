@@ -9,7 +9,7 @@
       "id": "daikon",
       "name": "大根",
       "points": 200,
-      "active": true,
+      "active": false,
       "provider": "（株）エバタケ"
     },
     {
@@ -23,7 +23,7 @@
       "id": "peanut",
       "name": "落花生",
       "points": 500,
-      "active": false,
+      "active": true,
       "provider": "（株）エバタケ"
     },
     {
