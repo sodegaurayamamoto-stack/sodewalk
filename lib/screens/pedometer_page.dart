@@ -196,6 +196,9 @@ class _PedometerPageState extends State<PedometerPage>
         _isError = false;
       });
     }
+
+    // 歩数が更新されるたびに都度保存しておく（強制終了時の保存漏れ対策）
+    await _storage.setStepsForDay(DateTime.now(), todaySteps);
   }
 
   void _onStepCountError(error) {
