@@ -689,6 +689,126 @@
       "character": "ガウラ",
       "action": "サンドウィッチ",
       "image": "0115_gaura_sandwich.png"
+    },
+    {
+      "id": "0116",
+      "character": "ガウラ",
+      "action": "警察官",
+      "image": "0116_gaura_police.png"
+    },
+    {
+      "id": "0117",
+      "character": "ガウラ",
+      "action": "消防士",
+      "image": "0117_gaura_firefighter.png"
+    },
+    {
+      "id": "0118",
+      "character": "ガウラ",
+      "action": "医師",
+      "image": "0118_gaura_doctor.png"
+    },
+    {
+      "id": "0119",
+      "character": "ガウラ",
+      "action": "看護師",
+      "image": "0119_gaura_nurse.png"
+    },
+    {
+      "id": "0120",
+      "character": "ガウラ",
+      "action": "郵便局員",
+      "image": "0120_gaura_postal_worker.png"
+    },
+    {
+      "id": "0121",
+      "character": "ガウラ",
+      "action": "駅員",
+      "image": "0121_gaura_station_staff.png"
+    },
+    {
+      "id": "0122",
+      "character": "ガウラ",
+      "action": "バス運転士",
+      "image": "0122_gaura_bus_driver.png"
+    },
+    {
+      "id": "0123",
+      "character": "ガウラ",
+      "action": "自衛官",
+      "image": "0123_gaura_sdf_officer.png"
+    },
+    {
+      "id": "0124",
+      "character": "ガウラ",
+      "action": "農家",
+      "image": "0124_gaura_farmer.png"
+    },
+    {
+      "id": "0125",
+      "character": "ガウラ",
+      "action": "漁師",
+      "image": "0125_gaura_fisherman.png"
+    },
+    {
+      "id": "0126",
+      "character": "ガウラ",
+      "action": "シェフ",
+      "image": "0126_gaura_chef.png"
+    },
+    {
+      "id": "0127",
+      "character": "ガウラ",
+      "action": "寿司職人",
+      "image": "0127_gaura_sushi_chef.png"
+    },
+    {
+      "id": "0128",
+      "character": "ガウラ",
+      "action": "ラーメン職人",
+      "image": "0128_gaura_ramen_chef.png"
+    },
+    {
+      "id": "0129",
+      "character": "ガウラ",
+      "action": "パティシエ",
+      "image": "0129_gaura_patissier.png"
+    },
+    {
+      "id": "0130",
+      "character": "ガウラ",
+      "action": "大工",
+      "image": "0130_gaura_carpenter.png"
+    },
+    {
+      "id": "0131",
+      "character": "ガウラ",
+      "action": "現場監督",
+      "image": "0131_gaura_site_supervisor.png"
+    },
+    {
+      "id": "0132",
+      "character": "ガウラ",
+      "action": "とび",
+      "image": "0132_gaura_scaffolder.png"
+    },
+    {
+      "id": "0133",
+      "character": "ガウラ",
+      "action": "左官",
+      "image": "0133_gaura_plasterer.png"
+    },
+    {
+      "id": "0134",
+      "character": "ガウラ",
+      "action": "植木職人",
+      "image": "0134_gaura_gardener.png"
+    },
+    {
+      "id": "0135",
+      "character": "ガウラ",
+      "action": "スーパー店員",
+      "image": "0135_gaura_supermarket_staff.png"
     }
   ]
 }

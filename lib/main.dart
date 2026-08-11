@@ -9,11 +9,15 @@ import 'services/notification_service.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   tz.initializeTimeZones();
-  await NotificationService.initialize();
-  await NotificationService.scheduleDailyNotification();
   final prefs = await SharedPreferences.getInstance();
   final agreed = prefs.getBool('terms_agreed') ?? false;
+
   runApp(MyApp(showTerms: !agreed));
+
+  // 画面表示を優先し、通知の初期化は裏で行う（固まり対策）
+  NotificationService.initialize().then((_) {
+    NotificationService.scheduleDailyNotification();
+  });
 }
 
 class MyApp extends StatelessWidget {
