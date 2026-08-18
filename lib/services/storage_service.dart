@@ -61,91 +61,50 @@ class StorageService {
     await prefs.setString(key, json.encode(monthData));
   }
 
-  // --- 夜間歩数記録（21時通知タップ時） ---
-
-  static const String _eveningStepKey = 'evening_step_';
-
   String _dayKey(DateTime date) =>
       '${date.year}-${date.month}-${date.day}';
 
-  Future<void> saveEveningSteps(int totalSteps) async {
+  // --- 歩数ボーナス（今日の歩数をリアルタイム判定） ---
+  // tier: 0 = 未獲得, 1 = 5000歩ボーナス獲得済み, 2 = 8000歩ボーナス獲得済み（合計10pt）
+
+  static const String _dailyRewardTierKey = 'daily_reward_tier_';
+
+  Future<int> getDailyRewardTier(DateTime date) async {
     final prefs = await SharedPreferences.getInstance();
-    final today = _dayKey(DateTime.now());
-    await prefs.setInt('$_eveningStepKey$today', totalSteps);
+    return prefs.getInt('$_dailyRewardTierKey${_dayKey(date)}') ?? 0;
   }
 
-  Future<int?> getEveningSteps(DateTime date) async {
+  Future<void> setDailyRewardTier(DateTime date, int tier) async {
     final prefs = await SharedPreferences.getInstance();
-    final key = _dayKey(date);
-    return prefs.getInt('$_eveningStepKey$key');
+    await prefs.setInt('$_dailyRewardTierKey${_dayKey(date)}', tier);
   }
 
-  Future<int> calcYesterdaySteps() async {
-    final now = DateTime.now();
-    final yesterday = now.subtract(const Duration(days: 1));
-    final todayEvening = await getEveningSteps(now);
-    final yesterdayEvening = await getEveningSteps(yesterday);
-    if (todayEvening == null || yesterdayEvening == null) return 0;
-    final diff = todayEvening - yesterdayEvening;
-    return diff < 0 ? 0 : diff;
-  }
+  /// 今日の歩数を渡して、閾値を超えていればポイントを加算する。
+  /// 5000歩以上で+5pt、8000歩以上で合計10pt（5000達成済みなら追加+5pt）。
+  /// 1日のうち、それぞれの段階は1回だけ加算される。
+  Future<StepRewardResult?> processStepReward(int todaySteps) async {
+    final today = DateTime.now();
+    final currentTier = await getDailyRewardTier(today);
 
-  // --- ペドメーター用：システム累積歩数の基準値 ---
+    int newTier = currentTier;
+    int earned = 0;
 
-  static const String _stepBaseKey = 'step_base_';
+    if (todaySteps >= 8000 && currentTier < 2) {
+      earned = currentTier == 1 ? 5 : 10;
+      newTier = 2;
+    } else if (todaySteps >= 5000 && currentTier < 1) {
+      earned = 5;
+      newTier = 1;
+    }
 
-  Future<void> saveStepBase(int totalSteps) async {
-    final prefs = await SharedPreferences.getInstance();
-    final today = _dayKey(DateTime.now());
-    await prefs.setInt('$_stepBaseKey$today', totalSteps);
-  }
+    if (earned <= 0) return null;
 
-  Future<int?> getStepBase() async {
-    final prefs = await SharedPreferences.getInstance();
-    final today = _dayKey(DateTime.now());
-    return prefs.getInt('$_stepBaseKey$today');
-  }
+    final totalPoints = await addPoints(earned);
+    await setDailyRewardTier(today, newTier);
 
-  // --- 歩数報酬（ポイント付与）関連 ---
-
-  String _rewardCheckKey(DateTime date) =>
-      "reward_done_${date.year}_${date.month}_${date.day}";
-
-  Future<bool> isRewardAlreadyGiven(DateTime date) async {
-    final prefs = await SharedPreferences.getInstance();
-    return prefs.getBool(_rewardCheckKey(date)) ?? false;
-  }
-
-  Future<void> markRewardGiven(DateTime date) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setBool(_rewardCheckKey(date), true);
-  }
-
-  int calculateEarnedPoints(int steps) {
-    if (steps >= 8000) return 10;
-    if (steps >= 5000) return 5;
-    return 0;
-  }
-
-  Future<RewardResult?> processYesterdayReward() async {
-    final now = DateTime.now();
-    final yesterday = now.subtract(const Duration(days: 1));
-    final alreadyRewarded = await isRewardAlreadyGiven(yesterday);
-    if (alreadyRewarded) return null;
-
-    final steps = await calcYesterdaySteps();
-    if (steps <= 0) return null;
-
-    final earnedPoints = calculateEarnedPoints(steps);
-    if (earnedPoints <= 0) return null;
-
-    final totalPoints = await addPoints(earnedPoints);
-    await markRewardGiven(yesterday);
-    await setStepsForDay(yesterday, steps);
-
-    return RewardResult(
-      steps: steps,
-      earnedPoints: earnedPoints,
+    return StepRewardResult(
+      steps: todaySteps,
+      earnedPoints: earned,
       totalPoints: totalPoints,
     );
   }
@@ -282,12 +241,12 @@ class StorageService {
   }
 }
 
-class RewardResult {
+class StepRewardResult {
   final int steps;
   final int earnedPoints;
   final int totalPoints;
 
-  RewardResult({
+  StepRewardResult({
     required this.steps,
     required this.earnedPoints,
     required this.totalPoints,

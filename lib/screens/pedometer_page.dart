@@ -45,7 +45,6 @@ class _PedometerPageState extends State<PedometerPage>
     _confettiController = ConfettiController(duration: const Duration(seconds: 3));
     WidgetsBinding.instance.addObserver(this);
     _loadCoins();
-    _processRewardOnOpen();
     _initPedometer();
   }
 
@@ -83,14 +82,14 @@ class _PedometerPageState extends State<PedometerPage>
     });
   }
 
-  Future<void> _processRewardOnOpen() async {
-    final reward = await _storage.processYesterdayReward();
+  Future<void> _checkStepReward(int todaySteps) async {
+    final reward = await _storage.processStepReward(todaySteps);
     if (reward != null && mounted) {
-      _showRewardDialog(reward);
+      _showStepRewardDialog(reward);
     }
   }
 
-  void _showRewardDialog(RewardResult reward) {
+  void _showStepRewardDialog(StepRewardResult reward) {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -101,14 +100,9 @@ class _PedometerPageState extends State<PedometerPage>
           children: [
             const Text('🎉', style: TextStyle(fontSize: 48)),
             const SizedBox(height: 12),
-            const Text(
-              '昨日の歩数ボーナス！',
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.orange),
-            ),
-            const SizedBox(height: 8),
             Text(
-              '昨日は ${reward.steps} 歩歩きました！',
-              style: TextStyle(fontSize: 16, color: Colors.grey.shade600),
+              '今日は ${reward.steps} 歩達成！',
+              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.orange),
             ),
             const SizedBox(height: 8),
             Text(
@@ -142,6 +136,9 @@ class _PedometerPageState extends State<PedometerPage>
     final saved = await _storage.getStepsForDay(DateTime.now());
     _savedStepsBeforeOpen = saved;
     if (mounted) setState(() => _steps = saved);
+
+    // 開いた時点の歩数で、すでに閾値を超えていればここで判定
+    await _checkStepReward(saved);
 
     final status = await Permission.activityRecognition.request();
     if (!status.isGranted) {
@@ -199,6 +196,9 @@ class _PedometerPageState extends State<PedometerPage>
 
     // 歩数が更新されるたびに都度保存しておく（強制終了時の保存漏れ対策）
     await _storage.setStepsForDay(DateTime.now(), todaySteps);
+
+    // 閾値（5000歩・8000歩）を超えたらポイント加算＆ポップアップ
+    await _checkStepReward(todaySteps);
   }
 
   void _onStepCountError(error) {

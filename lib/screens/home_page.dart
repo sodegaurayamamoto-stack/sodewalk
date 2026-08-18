@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import '../services/storage_service.dart';
-import '../widgets/reward_dialog.dart';
 import 'data_transfer_page.dart';
 import 'pedometer_page.dart';
 import 'eat_main_page.dart';
@@ -24,16 +23,6 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future<void> _loadInitialData() async {
-    final reward = await _storage.processYesterdayReward();
-    if (reward != null && mounted) {
-      setState(() => _points = reward.totalPoints);
-      await RewardDialog.show(
-        context,
-        steps: reward.steps,
-        points: reward.earnedPoints,
-      );
-    }
-
     final loginBonus = await _storage.processTodayLoginBonus();
     if (loginBonus != null && mounted) {
       setState(() => _points = loginBonus);

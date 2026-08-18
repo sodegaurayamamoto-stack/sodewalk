@@ -17,6 +17,8 @@ void main() async {
   // 画面表示を優先し、通知の初期化は裏で行う（固まり対策）
   NotificationService.initialize().then((_) {
     NotificationService.scheduleDailyNotification();
+  }).catchError((e) {
+    // 通知初期化に失敗してもアプリ本体はクラッシュさせない
   });
 }
 
