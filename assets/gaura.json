@@ -809,6 +809,126 @@
       "character": "ガウラ",
       "action": "スーパー店員",
       "image": "0135_gaura_supermarket_staff.png"
+    },
+    {
+      "id": "0136",
+      "character": "ガウラ",
+      "action": "コンビニ店員",
+      "image": "0136_gaura_convenience_store_staff.png"
+    },
+    {
+      "id": "0137",
+      "character": "ガウラ",
+      "action": "八百屋",
+      "image": "0137_gaura_greengrocer.png"
+    },
+    {
+      "id": "0138",
+      "character": "ガウラ",
+      "action": "魚屋",
+      "image": "0138_gaura_fish_shop.png"
+    },
+    {
+      "id": "0139",
+      "character": "ガウラ",
+      "action": "肉屋",
+      "image": "0139_gaura_butcher.png"
+    },
+    {
+      "id": "0140",
+      "character": "ガウラ",
+      "action": "花屋",
+      "image": "0140_gaura_flower_shop.png"
+    },
+    {
+      "id": "0141",
+      "character": "ガウラ",
+      "action": "ホテルスタッフ",
+      "image": "0141_gaura_hotel_staff.png"
+    },
+    {
+      "id": "0142",
+      "character": "ガウラ",
+      "action": "美容師",
+      "image": "0142_gaura_hairdresser.png"
+    },
+    {
+      "id": "0143",
+      "character": "ガウラ",
+      "action": "画家",
+      "image": "0143_gaura_painter.png"
+    },
+    {
+      "id": "0144",
+      "character": "ガウラ",
+      "action": "写真家",
+      "image": "0144_gaura_photographer.png"
+    },
+    {
+      "id": "0145",
+      "character": "ガウラ",
+      "action": "歌手",
+      "image": "0145_gaura_singer.png"
+    },
+    {
+      "id": "0146",
+      "character": "ガウラ",
+      "action": "ピアニスト",
+      "image": "0146_gaura_pianist.png"
+    },
+    {
+      "id": "0147",
+      "character": "ガウラ",
+      "action": "ギタリスト",
+      "image": "0147_gaura_guitarist.png"
+    },
+    {
+      "id": "0148",
+      "character": "ガウラ",
+      "action": "ドラマー",
+      "image": "0148_gaura_drummer.png"
+    },
+    {
+      "id": "0149",
+      "character": "ガウラ",
+      "action": "宇宙飛行士",
+      "image": "0149_gaura_astronaut.png"
+    },
+    {
+      "id": "0150",
+      "character": "ガウラ",
+      "action": "探検家",
+      "image": "0150_gaura_explorer.png"
+    },
+    {
+      "id": "0151",
+      "character": "ガウラ",
+      "action": "考古学者",
+      "image": "0151_gaura_archaeologist.png"
+    },
+    {
+      "id": "0152",
+      "character": "ガウラ",
+      "action": "科学者",
+      "image": "0152_gaura_scientist.png"
+    },
+    {
+      "id": "0153",
+      "character": "ガウラ",
+      "action": "スーツ",
+      "image": "0153_gaura_suit.png"
+    },
+    {
+      "id": "0154",
+      "character": "ガウラ",
+      "action": "学ラン",
+      "image": "0154_gaura_gakuran.png"
+    },
+    {
+      "id": "0155",
+      "character": "ガウラ",
+      "action": "ブレザー",
+      "image": "0155_gaura_blazer.png"
     }
   ]
 }
