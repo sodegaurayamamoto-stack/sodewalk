@@ -30,10 +30,12 @@ class _PedometerPageState extends State<PedometerPage>
   bool _isError = false;
   bool _isSearchingGaura = false;
 
-  // システム累積歩数
-  int? _systemStepsAtOpen;   // アプリを開いた時点の累積歩数
-  int _savedStepsBeforeOpen; // タスクを切る前に保存した歩数
-  int _currentSystemSteps = 0; // 現在のシステム累積歩数
+  int? _systemStepsAtOpen;
+  int _savedStepsBeforeOpen;
+  int _currentSystemSteps = 0;
+
+  int? _todayBaseline;
+  String? _baselineDayKey;
 
   _PedometerPageState() : _savedStepsBeforeOpen = 0;
 
@@ -51,11 +53,9 @@ class _PedometerPageState extends State<PedometerPage>
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.paused) {
-      // タスクを切った時に歩数を保存
       _saveCurrentSteps();
     }
     if (state == AppLifecycleState.resumed) {
-      // 再度開いた時
       _loadCoins();
       _resetBaseOnResume();
     }
@@ -68,18 +68,28 @@ class _PedometerPageState extends State<PedometerPage>
     super.dispose();
   }
 
-  // タスクを切った時に現在の歩数を保存
   Future<void> _saveCurrentSteps() async {
     await _storage.setStepsForDay(DateTime.now(), _steps);
   }
 
-  // 再起動時に基準値をリセット
   Future<void> _resetBaseOnResume() async {
     _systemStepsAtOpen = _currentSystemSteps;
     final saved = await _storage.getStepsForDay(DateTime.now());
+    await _refreshBaseline();
     setState(() {
       _savedStepsBeforeOpen = saved;
     });
+  }
+
+  String _dayKeyString(DateTime date) => '${date.year}-${date.month}-${date.day}';
+
+  // 深夜0時に記録された基準値を、日付が変わったときだけ読み直す
+  Future<void> _refreshBaseline() async {
+    final todayKey = _dayKeyString(DateTime.now());
+    if (_baselineDayKey != todayKey) {
+      _todayBaseline = await _storage.getStepBase();
+      _baselineDayKey = todayKey;
+    }
   }
 
   Future<void> _checkStepReward(int todaySteps) async {
@@ -132,12 +142,11 @@ class _PedometerPageState extends State<PedometerPage>
   }
 
   Future<void> _initPedometer() async {
-    // 保存済みの歩数を先に表示
     final saved = await _storage.getStepsForDay(DateTime.now());
     _savedStepsBeforeOpen = saved;
     if (mounted) setState(() => _steps = saved);
 
-    // 開いた時点の歩数で、すでに閾値を超えていればここで判定
+    await _refreshBaseline();
     await _checkStepReward(saved);
 
     final status = await Permission.activityRecognition.request();
@@ -177,14 +186,20 @@ class _PedometerPageState extends State<PedometerPage>
     final systemSteps = event.steps;
     _currentSystemSteps = systemSteps;
 
-    // 初回取得時に基準値を設定
-    if (_systemStepsAtOpen == null) {
-      _systemStepsAtOpen = systemSteps;
-    }
+    await _refreshBaseline();
 
-    // 今日の歩数 = 保存済み歩数 + 今回開いてからの差分
-    final diffSinceOpen = systemSteps - _systemStepsAtOpen!;
-    final todaySteps = (_savedStepsBeforeOpen + diffSinceOpen).clamp(0, 999999);
+    int todaySteps;
+    if (_todayBaseline != null) {
+      // 深夜0時に記録された基準値を使用（最も確実）
+      todaySteps = (systemSteps - _todayBaseline!).clamp(0, 999999);
+    } else {
+      // 基準値がまだない場合は、アプリを開いた時点を基準にするフォールバック
+      if (_systemStepsAtOpen == null) {
+        _systemStepsAtOpen = systemSteps;
+      }
+      final diffSinceOpen = systemSteps - _systemStepsAtOpen!;
+      todaySteps = (_savedStepsBeforeOpen + diffSinceOpen).clamp(0, 999999);
+    }
 
     if (mounted) {
       setState(() {
@@ -194,10 +209,7 @@ class _PedometerPageState extends State<PedometerPage>
       });
     }
 
-    // 歩数が更新されるたびに都度保存しておく（強制終了時の保存漏れ対策）
     await _storage.setStepsForDay(DateTime.now(), todaySteps);
-
-    // 閾値（5000歩・8000歩）を超えたらポイント加算＆ポップアップ
     await _checkStepReward(todaySteps);
   }
 

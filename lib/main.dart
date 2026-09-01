@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:timezone/data/latest.dart' as tz;
+import 'package:android_alarm_manager_plus/android_alarm_manager_plus.dart';
 import 'screens/home_page.dart';
 import 'screens/terms_page.dart';
 import 'services/notification_service.dart';
+import 'services/step_baseline_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -14,12 +16,24 @@ void main() async {
 
   runApp(MyApp(showTerms: !agreed));
 
-  // 画面表示を優先し、通知の初期化は裏で行う（固まり対策）
   NotificationService.initialize().then((_) {
     NotificationService.scheduleDailyNotification();
-  }).catchError((e) {
-    // 通知初期化に失敗してもアプリ本体はクラッシュさせない
-  });
+  }).catchError((e) {});
+
+  AndroidAlarmManager.initialize().then((_) {
+    final now = DateTime.now();
+    final nextMidnight =
+        DateTime(now.year, now.month, now.day + 1, 0, 0, 5);
+    AndroidAlarmManager.periodic(
+      const Duration(days: 1),
+      0,
+      captureMidnightStepBaseline,
+      startAt: nextMidnight,
+      exact: true,
+      wakeup: true,
+      rescheduleOnReboot: true,
+    );
+  }).catchError((e) {});
 }
 
 class MyApp extends StatelessWidget {

@@ -64,6 +64,26 @@ class StorageService {
   String _dayKey(DateTime date) =>
       '${date.year}-${date.month}-${date.day}';
 
+  // --- 深夜0時基準の歩数ベースライン関連 ---
+
+  static const String _stepBaseKey = 'step_base_value';
+  static const String _stepBaseDateKey = 'step_base_date';
+
+  /// 深夜0時時点のシステム歩数（累積値）を「今日の基準値」として保存する
+  Future<void> saveStepBase(int steps) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setInt(_stepBaseKey, steps);
+    await prefs.setString(_stepBaseDateKey, _dayKey(DateTime.now()));
+  }
+
+  /// 今日の基準値を取得する。まだ今日の分が記録されていなければ null を返す
+  Future<int?> getStepBase() async {
+    final prefs = await SharedPreferences.getInstance();
+    final savedDate = prefs.getString(_stepBaseDateKey);
+    if (savedDate != _dayKey(DateTime.now())) return null;
+    return prefs.getInt(_stepBaseKey);
+  }
+
   // --- 歩数ボーナス（今日の歩数をリアルタイム判定） ---
   // tier: 0 = 未獲得, 1 = 5000歩ボーナス獲得済み, 2 = 8000歩ボーナス獲得済み（合計10pt）
 

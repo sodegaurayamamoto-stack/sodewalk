@@ -24,6 +24,8 @@ dependencies:
   flutter_local_notifications: ^17.0.0
   timezone: ^0.9.0
   confetti: ^0.7.0
+  android_alarm_manager_plus: ^4.0.4
+
 
 dev_dependencies:
   flutter_test:
