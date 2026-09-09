@@ -189,10 +189,13 @@ class _GauraCollectionPageState extends State<GauraCollectionPage> {
                                       width: 1.5,
                                     ),
                                   ),
-                                  child: Center(
-                                    child: collected
-                                        ? Image.asset(_getImagePath(item), fit: BoxFit.contain)
-                                        : Text('?', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.grey.shade400)),
+                                  child: ClipRRect(
+                                    borderRadius: BorderRadius.circular(8.5),
+                                    child: Center(
+                                      child: collected
+                                          ? Image.asset(_getImagePath(item), fit: BoxFit.contain)
+                                          : Text('?', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.grey.shade400)),
+                                    ),
                                   ),
                                 ),
                               ),
