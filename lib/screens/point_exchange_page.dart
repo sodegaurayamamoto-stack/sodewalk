@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'dart:convert';
-import 'package:url_launcher/url_launcher.dart';
 import '../models/vegetable.dart';
 import '../services/storage_service.dart';
+import '../services/google_sheets_service.dart';
 import 'order_form_page.dart';
 
 class PointExchangePage extends StatefulWidget {
@@ -15,10 +13,11 @@ class PointExchangePage extends StatefulWidget {
 
 class _PointExchangePageState extends State<PointExchangePage> {
   final StorageService _storage = StorageService();
+  final GoogleSheetsService _sheets = GoogleSheetsService();
 
   List<Vegetable> _vegetables = [];
   bool _isLoading = true;
-  bool _isVersionOk = true;
+  bool _hasError = false;
 
   @override
   void initState() {
@@ -27,46 +26,18 @@ class _PointExchangePageState extends State<PointExchangePage> {
   }
 
   Future<void> _loadVegetableData() async {
-    try {
-      final jsonString = await rootBundle.loadString('assets/vegetables.json');
-      final data = json.decode(jsonString);
+    setState(() {
+      _isLoading = true;
+      _hasError = false;
+    });
 
-      final latestVersion = data['latest_version'] as String? ?? '1.0.0';
-      const currentVersion = '1.0.0';
-      final isVersionOk = _compareVersion(currentVersion, latestVersion);
+    final items = await _sheets.fetchVegetables();
 
-      final items = (data['items'] as List<dynamic>? ?? [])
-          .map((item) => Vegetable.fromJson(item as Map<String, dynamic>))
-          .toList();
-
-      setState(() {
-        _vegetables = items;
-        _isVersionOk = isVersionOk;
-        _isLoading = false;
-      });
-    } catch (e) {
-      setState(() {
-        _vegetables = [];
-        _isLoading = false;
-      });
-    }
-  }
-
-  bool _compareVersion(String current, String latest) {
-    final c = current.split('.').map(int.parse).toList();
-    final l = latest.split('.').map(int.parse).toList();
-    for (int i = 0; i < 3; i++) {
-      final cv = i < c.length ? c[i] : 0;
-      final lv = i < l.length ? l[i] : 0;
-      if (cv > lv) return true;
-      if (cv < lv) return false;
-    }
-    return true;
-  }
-
-  void _openGooglePlay() async {
-    final url = Uri.parse('https://play.google.com/store/apps/details?id=com.sodewalk.app');
-    await launchUrl(url, mode: LaunchMode.externalApplication);
+    setState(() {
+      _vegetables = items;
+      _hasError = items.isEmpty;
+      _isLoading = false;
+    });
   }
 
   @override
@@ -88,8 +59,8 @@ class _PointExchangePageState extends State<PointExchangePage> {
             Expanded(
               child: _isLoading
                   ? const Center(child: CircularProgressIndicator())
-                  : !_isVersionOk
-                      ? _buildUpdateRequired()
+                  : _hasError
+                      ? _buildErrorState()
                       : Column(
                           children: [
                             Expanded(
@@ -119,31 +90,31 @@ class _PointExchangePageState extends State<PointExchangePage> {
     );
   }
 
-  Widget _buildUpdateRequired() {
+  Widget _buildErrorState() {
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(32.0),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.system_update, size: 80, color: Colors.orange.shade300),
+            Icon(Icons.wifi_off, size: 80, color: Colors.grey.shade300),
             const SizedBox(height: 24),
             const Text(
-              'アップデートが必要です',
+              '読み込みに失敗しました',
               style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 16),
             Text(
-              '最新バージョンのアプリでのみ\nポイント交換ができます。\nGoogle Playからアップデートしてください。',
+              '通信状態をご確認のうえ、\nもう一度お試しください。',
               style: TextStyle(fontSize: 16, color: Colors.grey.shade600, height: 1.5),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 32),
             ElevatedButton.icon(
-              onPressed: _openGooglePlay,
-              icon: const Icon(Icons.open_in_new),
-              label: const Text('Google Playを開く', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+              onPressed: _loadVegetableData,
+              icon: const Icon(Icons.refresh),
+              label: const Text('再読み込み', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.orange,
                 foregroundColor: Colors.white,
@@ -264,7 +235,7 @@ class _PointExchangePageState extends State<PointExchangePage> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     const Text(
-                      '交換した商品の受け渡しは\n袖ケ浦市内に限ります。',
+                      '交換した商品は袖ケ浦市内で\nお受け取りいただけます。',
                       style: TextStyle(fontSize: 16, height: 1.4, color: Colors.black87),
                     ),
                     const SizedBox(height: 12),

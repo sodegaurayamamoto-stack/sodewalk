@@ -1,4 +1,6 @@
+import 'dart:convert';
 import 'package:http/http.dart' as http;
+import '../models/vegetable.dart';
 
 class GoogleSheetsService {
   static const String _scriptUrl =
@@ -6,13 +8,34 @@ class GoogleSheetsService {
 
   static String lastDebugInfo = '';
 
+  Future<List<Vegetable>> fetchVegetables() async {
+    try {
+      final uri = Uri.parse(_scriptUrl).replace(queryParameters: {
+        'action': 'getVegetables',
+      });
+
+      final response = await http.get(uri);
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        final items = (data['items'] as List<dynamic>? ?? [])
+            .map((item) => Vegetable.fromJson(item as Map<String, dynamic>))
+            .toList();
+        return items;
+      }
+      return [];
+    } catch (e) {
+      return [];
+    }
+  }
+
   Future<bool> submitOrder({
     required String name,
     required String address,
     required String phone,
     required String itemName,
     required int itemPoints,
-    required String preferredDate,
+    String pickupLocation = '',
   }) async {
     try {
       // GASはPOSTに対して302リダイレクトを返す仕様のため、
@@ -23,7 +46,7 @@ class GoogleSheetsService {
         'phone': phone,
         'itemName': itemName,
         'itemPoints': itemPoints.toString(),
-        'preferredDate': preferredDate,
+        'pickupLocation': pickupLocation,
       });
 
       final response = await http.get(uri);

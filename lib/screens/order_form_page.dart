@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'dart:convert';
 import '../services/storage_service.dart';
 import '../services/google_sheets_service.dart';
 
@@ -15,6 +13,14 @@ class OrderFormPage extends StatefulWidget {
 }
 
 class _OrderFormPageState extends State<OrderFormPage> {
+  static const List<String> _pickupLocations = [
+    '袖ケ浦市役所',
+    '長浦公民館',
+    '昭和公民館',
+    '根形公民館',
+    '平川公民館',
+  ];
+
   final StorageService _storage = StorageService();
   final GoogleSheetsService _sheets = GoogleSheetsService();
 
@@ -22,55 +28,32 @@ class _OrderFormPageState extends State<OrderFormPage> {
   final _addressController = TextEditingController();
   final _phoneController = TextEditingController();
 
-  String? _selectedDate;
-  List<String> _availableSaturdays = [];
-  bool _isLoadingDates = true;
+  bool _isOutOfCity = false;
+  String? _selectedPickupLocation;
   bool _isSubmitting = false;
 
-  @override
-  void initState() {
-    super.initState();
-    _calculateAvailableSaturdays();
-  }
-
-  Future<void> _calculateAvailableSaturdays() async {
-    List<String> disabledDates = [];
-    try {
-      final jsonString = await rootBundle.loadString('assets/vegetables.json');
-      final data = json.decode(jsonString);
-      if (data['disabled_saturdays'] != null) {
-        disabledDates = List<String>.from(data['disabled_saturdays']);
-      }
-    } catch (_) {}
-
-    List<String> computedSaturdays = [];
-    DateTime targetDate = DateTime.now();
-
-    while (computedSaturdays.length < 4) {
-      if (targetDate.weekday == DateTime.saturday) {
-        final dateString =
-            "${targetDate.year}-${targetDate.month.toString().padLeft(2, '0')}-${targetDate.day.toString().padLeft(2, '0')}";
-        if (!disabledDates.contains(dateString)) {
-          computedSaturdays.add("${targetDate.year}年${targetDate.month}月${targetDate.day}日（土）");
-        }
-      }
-      targetDate = targetDate.add(const Duration(days: 1));
+  Future<void> _submitOrder() async {
+    if (_nameController.text.isEmpty || _phoneController.text.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('すべての項目を入力してください', style: TextStyle(fontSize: 18)),
+          backgroundColor: Colors.redAccent,
+        ),
+      );
+      return;
     }
 
-    setState(() {
-      _availableSaturdays = computedSaturdays;
-      if (_availableSaturdays.isNotEmpty) {
-        _selectedDate = _availableSaturdays.first;
-      }
-      _isLoadingDates = false;
-    });
-  }
+    if (_isOutOfCity && _selectedPickupLocation == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('受け取り場所を選択してください', style: TextStyle(fontSize: 18)),
+          backgroundColor: Colors.redAccent,
+        ),
+      );
+      return;
+    }
 
-  Future<void> _submitOrder() async {
-    if (_nameController.text.isEmpty ||
-        _addressController.text.isEmpty ||
-        _phoneController.text.isEmpty ||
-        _selectedDate == null) {
+    if (!_isOutOfCity && _addressController.text.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('すべての項目を入力してください', style: TextStyle(fontSize: 18)),
@@ -90,11 +73,11 @@ class _OrderFormPageState extends State<OrderFormPage> {
 
     final success = await _sheets.submitOrder(
       name: _nameController.text,
-      address: _addressController.text,
+      address: _isOutOfCity ? '' : _addressController.text,
       phone: _phoneController.text,
       itemName: widget.itemName,
       itemPoints: widget.itemPoints,
-      preferredDate: _selectedDate!,
+      pickupLocation: _isOutOfCity ? _selectedPickupLocation! : '',
     );
 
     if (!mounted) return;
@@ -132,12 +115,12 @@ class _OrderFormPageState extends State<OrderFormPage> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const Text(
-                '交換した商品の受け渡しは\n袖ケ浦市内に限ります。',
+                '送信後、担当者よりお電話にて\n受け渡し日程をご連絡いたします。',
                 style: TextStyle(fontSize: 16, height: 1.4, color: Colors.black87),
               ),
               const SizedBox(height: 12),
               Text(
-                'お名前・ご住所・電話番号に誤りがある場合、商品をお渡しできない可能性がありますので、入力内容をご確認ください。',
+                'お名前・ご住所（または受け取り場所）・電話番号に誤りがある場合、商品をお渡しできない可能性がありますので、入力内容をご確認ください。',
                 style: TextStyle(fontSize: 14, height: 1.4, color: Colors.grey.shade700),
               ),
             ],
@@ -223,7 +206,7 @@ class _OrderFormPageState extends State<OrderFormPage> {
               ),
               const SizedBox(height: 20),
               const Text(
-                '担当者が内容を確認し、受け渡し準備を進めます。お受け渡し日に商品をお渡しいたします。',
+                '担当者が内容を確認のうえ、お電話にて\n受け渡し日程をご連絡いたします。',
                 style: TextStyle(fontSize: 18, height: 1.4),
                 textAlign: TextAlign.center,
               ),
@@ -267,88 +250,126 @@ class _OrderFormPageState extends State<OrderFormPage> {
               ),
             ),
             Expanded(
-              child: _isLoadingDates
-                  ? const Center(child: CircularProgressIndicator())
-                  : SingleChildScrollView(
-                      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _buildInputFieldLabel('👤 お名前'),
+                    _buildTextField(_nameController, '例：山田 太郎', TextInputType.text),
+
+                    const SizedBox(height: 8),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 4),
+                      child: Row(
                         children: [
-                          _buildInputFieldLabel('👤 お名前'),
-                          _buildTextField(_nameController, '例：山田 太郎', TextInputType.text),
-                          _buildInputFieldLabel('📍 ご住所'),
-                          _buildTextField(_addressController, '例：袖ケ浦市坂戸市場1-2-3', TextInputType.text),
-                          _buildInputFieldLabel('📞 電話番号'),
-                          _buildTextField(_phoneController, '例：09012345678', TextInputType.phone),
-                          _buildInputFieldLabel('📅 受け渡し希望日'),
-                          Container(
-                            width: double.infinity,
-                            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 4),
-                            decoration: BoxDecoration(
-                              color: Colors.grey.shade50,
-                              borderRadius: BorderRadius.circular(14),
-                              border: Border.all(color: Colors.grey.shade300, width: 2),
-                            ),
-                            child: DropdownButtonHideUnderline(
-                              child: DropdownButton<String>(
-                                value: _selectedDate,
-                                isExpanded: true,
-                                icon: const Icon(Icons.arrow_drop_down, size: 36),
-                                style: const TextStyle(fontSize: 22, color: Colors.black87, fontWeight: FontWeight.bold),
-                                onChanged: (newValue) => setState(() => _selectedDate = newValue),
-                                items: _availableSaturdays
-                                    .map((value) => DropdownMenuItem<String>(value: value, child: Text(value)))
-                                    .toList(),
+                          Checkbox(
+                            value: _isOutOfCity,
+                            activeColor: Colors.orange,
+                            onChanged: (value) {
+                              setState(() {
+                                _isOutOfCity = value ?? false;
+                                _selectedPickupLocation = null;
+                              });
+                            },
+                          ),
+                          Expanded(
+                            child: GestureDetector(
+                              onTap: () {
+                                setState(() {
+                                  _isOutOfCity = !_isOutOfCity;
+                                  _selectedPickupLocation = null;
+                                });
+                              },
+                              child: const Text(
+                                '市外にお住まいの方はこちら',
+                                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                               ),
                             ),
                           ),
-                          const SizedBox(height: 28),
-                          Container(
-                            width: double.infinity,
-                            padding: const EdgeInsets.all(16),
-                            decoration: BoxDecoration(
-                              color: Colors.amber.shade50,
-                              borderRadius: BorderRadius.circular(14),
-                              border: Border.all(color: Colors.amber.shade300, width: 1.5),
-                            ),
-                            child: Row(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Icon(Icons.info_outline, color: Colors.amber.shade800, size: 22),
-                                const SizedBox(width: 10),
-                                Expanded(
-                                  child: Text(
-                                    'お名前・ご住所・電話番号に誤りがある場合、商品をお渡しできない可能性があります。送信前に入力内容をご確認ください。',
-                                    style: TextStyle(fontSize: 14, height: 1.4, color: Colors.amber.shade900, fontWeight: FontWeight.w600),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          const SizedBox(height: 28),
-                          SizedBox(
-                            width: double.infinity,
-                            child: ElevatedButton(
-                              onPressed: _isSubmitting ? null : _submitOrder,
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.orange,
-                                foregroundColor: Colors.white,
-                                padding: const EdgeInsets.symmetric(vertical: 22),
-                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
-                              ),
-                              child: _isSubmitting
-                                  ? const SizedBox(
-                                      width: 28,
-                                      height: 28,
-                                      child: CircularProgressIndicator(color: Colors.white, strokeWidth: 3),
-                                    )
-                                  : const Text('交換を確定する', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
-                            ),
-                          ),
-                          const SizedBox(height: 40),
                         ],
                       ),
                     ),
+
+                    if (!_isOutOfCity) ...[
+                      _buildInputFieldLabel('📍 ご住所'),
+                      _buildTextField(_addressController, '例：袖ケ浦市坂戸市場1-2-3', TextInputType.text),
+                    ] else ...[
+                      _buildInputFieldLabel('📍 受け取り場所'),
+                      Container(
+                        width: double.infinity,
+                        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 4),
+                        decoration: BoxDecoration(
+                          color: Colors.grey.shade50,
+                          borderRadius: BorderRadius.circular(14),
+                          border: Border.all(color: Colors.grey.shade300, width: 2),
+                        ),
+                        child: DropdownButtonHideUnderline(
+                          child: DropdownButton<String>(
+                            value: _selectedPickupLocation,
+                            hint: const Text('選択してください', style: TextStyle(fontSize: 20, color: Colors.grey)),
+                            isExpanded: true,
+                            icon: const Icon(Icons.arrow_drop_down, size: 36),
+                            style: const TextStyle(fontSize: 22, color: Colors.black87, fontWeight: FontWeight.bold),
+                            onChanged: (newValue) => setState(() => _selectedPickupLocation = newValue),
+                            items: _pickupLocations
+                                .map((value) => DropdownMenuItem<String>(value: value, child: Text(value)))
+                                .toList(),
+                          ),
+                        ),
+                      ),
+                    ],
+
+                    _buildInputFieldLabel('📞 電話番号'),
+                    _buildTextField(_phoneController, '例：09012345678', TextInputType.phone),
+
+                    const SizedBox(height: 28),
+                    Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: Colors.amber.shade50,
+                        borderRadius: BorderRadius.circular(14),
+                        border: Border.all(color: Colors.amber.shade300, width: 1.5),
+                      ),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Icon(Icons.info_outline, color: Colors.amber.shade800, size: 22),
+                          const SizedBox(width: 10),
+                          Expanded(
+                            child: Text(
+                              'お名前・ご住所（または受け取り場所）・電話番号に誤りがある場合、商品をお渡しできない可能性があります。送信前に入力内容をご確認ください。',
+                              style: TextStyle(fontSize: 14, height: 1.4, color: Colors.amber.shade900, fontWeight: FontWeight.w600),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 28),
+                    SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton(
+                        onPressed: _isSubmitting ? null : _submitOrder,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.orange,
+                          foregroundColor: Colors.white,
+                          padding: const EdgeInsets.symmetric(vertical: 22),
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
+                        ),
+                        child: _isSubmitting
+                            ? const SizedBox(
+                                width: 28,
+                                height: 28,
+                                child: CircularProgressIndicator(color: Colors.white, strokeWidth: 3),
+                              )
+                            : const Text('交換を確定する', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
+                      ),
+                    ),
+                    const SizedBox(height: 40),
+                  ],
+                ),
+              ),
             ),
           ],
         ),
