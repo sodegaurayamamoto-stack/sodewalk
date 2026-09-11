@@ -51,6 +51,7 @@ class MyApp extends StatelessWidget {
       title: 'sodewalk',
       theme: baseTheme.copyWith(
         textTheme: GoogleFonts.notoSansJpTextTheme(baseTheme.textTheme),
+        primaryTextTheme: GoogleFonts.notoSansJpTextTheme(baseTheme.primaryTextTheme),
       ),
       home: showTerms ? const TermsPage() : const HomePage(),
     );
