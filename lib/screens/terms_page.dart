@@ -27,12 +27,12 @@ class TermsPage extends StatelessWidget {
             children: [
               const SizedBox(height: 16),
               const Text(
-                'そでウォーク\n利用規約',
+                'そでウォーク\n利用規約・プライバシー',
                 style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 8),
               const Text(
-                'ご利用前に以下の利用規約をお読みください。',
+                'ご利用前に以下をお読みください。',
                 style: TextStyle(fontSize: 14, color: Colors.grey),
               ),
               const SizedBox(height: 24),
@@ -57,12 +57,22 @@ class TermsPage extends StatelessWidget {
                             '野菜交換時に入力いただく氏名・住所・電話番号は、商品の受け渡し目的のみに使用します。第三者への提供や他の目的への利用は行いません。',
                       ),
                       _TermsSection(
-                        title: '第4条（免責事項）',
+                        title: '第4条（歩数データの利用）',
+                        content:
+                            '歩数は、Androidの「ヘルスコネクト」から読み取ります（読み取りのみ。書き込みはしません）。読み取った歩数は、ポイントの計算と歩数履歴の表示だけに使い、端末の中に保存します。広告や分析のために使うことはなく、運営者のサーバーへ送信することもありません。ヘルスコネクトの許可は、端末の設定からいつでも取り消せます。',
+                      ),
+                      _TermsSection(
+                        title: '第5条（位置情報の利用）',
+                        content:
+                            'ガウラくん探しや目的地の選択のために、現在地を使います。現在地は、近くのスポットを調べるためにその場で使うだけで、運営者のサーバーへ送信・保存しません。',
+                      ),
+                      _TermsSection(
+                        title: '第6条（免責事項）',
                         content:
                             '本アプリの利用により生じたいかなる損害についても、開発者は責任を負いません。また、歩行中の事故・怪我等についても自己責任でご利用ください。',
                       ),
                       _TermsSection(
-                        title: '第5条（サービスの変更・終了）',
+                        title: '第7条（サービスの変更・終了）',
                         content:
                             'サービスの内容は予告なく変更・終了する場合があります。あらかじめご了承ください。',
                       ),
