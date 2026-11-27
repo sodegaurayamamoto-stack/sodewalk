@@ -64,24 +64,54 @@ class StorageService {
   String _dayKey(DateTime date) =>
       '${date.year}-${date.month}-${date.day}';
 
-  // --- 深夜0時基準の歩数ベースライン関連 ---
+  // --- 歩数の基準値（24時時点の端末内蔵歩数）関連 ---
+  // 端末の歩数センサーは「起動してからの累計」を返します。
+  // 「今日の歩数 = 現在の累計 − 今日の0時時点の累計（基準値）」で求めます。
 
   static const String _stepBaseKey = 'step_base_value';
-  static const String _stepBaseDateKey = 'step_base_date';
+  static const String _stepBaseDayKey = 'step_base_day';
+  static const String _stepLastValueKey = 'step_last_value';
+  static const String _stepLastMsKey = 'step_last_ms';
 
-  /// 深夜0時時点のシステム歩数（累積値）を「今日の基準値」として保存する
-  Future<void> saveStepBase(int steps) async {
+  /// 基準値が記録された日（'yyyy-M-d'）。未記録なら null
+  Future<String?> getStepBaseDay() async {
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setInt(_stepBaseKey, steps);
-    await prefs.setString(_stepBaseDateKey, _dayKey(DateTime.now()));
+    return prefs.getString(_stepBaseDayKey);
   }
 
-  /// 今日の基準値を取得する。まだ今日の分が記録されていなければ null を返す
+  /// 今日の基準値（0時時点の累計）。未記録なら null
   Future<int?> getStepBase() async {
     final prefs = await SharedPreferences.getInstance();
-    final savedDate = prefs.getString(_stepBaseDateKey);
-    if (savedDate != _dayKey(DateTime.now())) return null;
     return prefs.getInt(_stepBaseKey);
+  }
+
+  Future<void> setStepBase(DateTime date, int value) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(_stepBaseDayKey, _dayKey(date));
+    await prefs.setInt(_stepBaseKey, value);
+  }
+
+  /// 深夜0時の自動記録（step_baseline_service.dart）から呼ばれる。
+  /// 受け取った歩数を「今日の基準値」として保存する。
+  Future<void> saveStepBase(int steps) async {
+    await setStepBase(DateTime.now(), steps);
+  }
+
+  /// 最後に読み取った端末の累計歩数（再起動の検知と、0時またぎの推定に使う）
+  Future<int?> getLastSystemSteps() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getInt(_stepLastValueKey);
+  }
+
+  Future<int?> getLastSystemStepsMs() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getInt(_stepLastMsKey);
+  }
+
+  Future<void> setLastSystemSteps(int value, DateTime at) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setInt(_stepLastValueKey, value);
+    await prefs.setInt(_stepLastMsKey, at.millisecondsSinceEpoch);
   }
 
   // --- 歩数ボーナス（今日の歩数をリアルタイム判定） ---
